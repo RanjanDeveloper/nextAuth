@@ -5,6 +5,8 @@ type Props = {}
 
 export default function page({}: Props) {
   return (
-   <ErrorCard />
+  <div className="h-full flex items-center justify-center">
+     <ErrorCard />
+  </div>
   )
 }
