@@ -25,15 +25,15 @@ export default {
           const publicapiUrl = process.env.NEXT_PUBLIC_APP_URL;
           //get user by email
           
-          const user =  await getUserByEmail(email);
-          // const response = await fetch(`${publicapiUrl}/api`, {
-          //   method: "POST",
-          //   headers: {
-          //     "Content-Type": "application/json",
-          //   },
-          //   body: JSON.stringify({ email }),
-          // });
-          // const user = await response.json();
+          // const user =  await getUserByEmail(email);
+          const response = await fetch(`${publicapiUrl}/api`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ email }),
+          });
+          const user = await response.json();
           if (!user || !user.password) return null;
 
           const isPasswordMatch = await compare(password, user.password);
