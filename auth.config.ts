@@ -24,8 +24,6 @@ export default {
           const { email, password } = validateFields.data;
           const publicapiUrl = process.env.NEXT_PUBLIC_APP_URL;
           //get user by email
-          
-          // const user =  await getUserByEmail(email);
           const response = await fetch(`${publicapiUrl}/api`, {
             method: "POST",
             headers: {
