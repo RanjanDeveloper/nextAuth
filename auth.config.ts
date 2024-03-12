@@ -5,6 +5,7 @@ import type { NextAuthConfig } from "next-auth";
 import { LoginSchema } from "@/schemas";
 import Github  from "next-auth/providers/github"
 import Google  from "next-auth/providers/google"
+import { getUserByEmail } from "@/data/adminService";
 export default {
   providers: [
     Google({
@@ -21,16 +22,18 @@ export default {
         const validateFields = LoginSchema.safeParse(credentials);
         if (validateFields.success) {
           const { email, password } = validateFields.data;
-
+          const publicapiUrl = process.env.NEXT_PUBLIC_APP_URL;
           //get user by email
-          const response = await fetch("http://localhost:3000/api", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ email }),
-          });
-          const user = await response.json();
+          
+          const user =  await getUserByEmail(email);
+          // const response = await fetch(`${publicapiUrl}/api`, {
+          //   method: "POST",
+          //   headers: {
+          //     "Content-Type": "application/json",
+          //   },
+          //   body: JSON.stringify({ email }),
+          // });
+          // const user = await response.json();
           if (!user || !user.password) return null;
 
           const isPasswordMatch = await compare(password, user.password);
