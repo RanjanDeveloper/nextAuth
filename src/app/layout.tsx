@@ -5,6 +5,7 @@ import StoreProvider from "./storeProvider";
 import { auth } from "@root/auth";
 import { SessionProvider } from "next-auth/react";
 import { Toaster } from "@/components/ui/sonner";
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -26,6 +27,7 @@ export default async function RootLayout({
           <body className={`${inter.className} bg-slate-300  h-screen`}>
             <Toaster />
             {children}
+            <SpeedInsights />
           </body>
         </html>
       </StoreProvider>
