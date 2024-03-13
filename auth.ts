@@ -8,7 +8,7 @@ import { getUserById } from "@/data/adminService";
 import { getTwoFactorConfirmationByUserId } from "@/data/two-factor-confirmation";
 import { getAccountByUserId } from "@/data/account";
 import { eq } from "drizzle-orm";
-
+import { EventCallbacks } from '@auth/core/types'
 export const {
   handlers: { GET, POST },
   auth,
@@ -23,8 +23,9 @@ export const {
     error: "/auth/error",
   },
   events: {
-    async linkAccount({ user }) {
-      await db.update(users).set({ emailVerified: new Date() }).where(eq(users.id, user.id!));
+    async linkAccount({ user, profile }) {
+      await db.update(users).set({ emailVerified: new Date(),image:profile.picture}).where(eq(users.id, user.id!));
+     
     },
   },
   callbacks: {

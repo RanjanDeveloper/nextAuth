@@ -1,3 +1,4 @@
+import { Profile } from 'next-auth';
 //auth.config.ts
 import { compare } from "bcryptjs";
 import Credentials from "next-auth/providers/credentials";
@@ -6,6 +7,7 @@ import { LoginSchema } from "@/schemas";
 import Github  from "next-auth/providers/github"
 import Google  from "next-auth/providers/google"
 import { getUserByEmail } from "@/data/adminService";
+
 export default {
   providers: [
     Google({

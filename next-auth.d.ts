@@ -1,17 +1,15 @@
+import { typeAdapterAccount } from '@auth/core/adapters';
 import { UserRoleEnum } from "@/drizzle/schemas/schema";
-import { type DefaultSession } from "next-auth";
-// import { UserRole } from "@/drizzle/schemas/schema";
-
-
-export type ExtendedUser = DefaultSession["user"] & {
-  role: UserRoleEnum;
-  isTwoFactorEnabled: boolean;
-  isOAuth:boolean;
-};
 
 declare module "next-auth" {
   interface Session {
-    user: ExtendedUser;
+    user: User;
+  }
+  interface User {
+      role: UserRoleEnum;
+      picture?:string,
+      isTwoFactorEnabled: boolean;
+      isOAuth:boolean;
   }
 }
 
@@ -22,5 +20,6 @@ declare module "next-auth/jwt" {
     role: UserRoleEnum;
     isTwoFactorEnabled: boolean;
     isOAuth:boolean;
+
   }
 }
