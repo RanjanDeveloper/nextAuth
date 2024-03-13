@@ -1,9 +1,9 @@
-import { ExtendedUser } from '@root/next-auth'
+import { defaultUser } from '@root/next-auth'
 import React from 'react'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 type Props = {
-    user? : ExtendedUser,
+    user?: defaultUser,
     label : string
 }
 
