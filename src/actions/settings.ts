@@ -1,6 +1,4 @@
 "use server";
-
-
 import bcrypt from "bcryptjs";
 import { db } from "@/lib/db";
 import * as z from "zod";
@@ -11,6 +9,8 @@ import { UserRoleEnum, user as users } from "@/drizzle/schemas/schema";
 import { eq } from "drizzle-orm";
 import { generateVerificationToken } from "@/lib/tokens";
 import { sendVerificationEmail } from "@/lib/mail";
+import { unstable_update } from "@root/auth";
+import { revalidatePath } from "next/cache";
 
 export const settings = async (values: z.infer<typeof SettingsSchema>) => {
   const user = await currentUser();
@@ -61,6 +61,14 @@ export const settings = async (values: z.infer<typeof SettingsSchema>) => {
   const updatedUser = await db.query.user.findFirst({
     where: (user,{eq})=> eq(user.id,dbUser.id)
   })
-
+  unstable_update({
+    user: {
+      name: updatedUser?.name,
+      email: updatedUser?.email,
+      isTwoFactorEnabled: updatedUser?.isTwoFactorEnabled ,
+      role: updatedUser?.userRole as UserRoleEnum,
+    }
+  });
+  revalidatePath('/');
   return { success: "Settings updated!" };
 };
