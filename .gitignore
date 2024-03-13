@@ -15,7 +15,7 @@
 
 # production
 /build
-
+/src/drizzle/out
 # misc
 .DS_Store
 *.pem
@@ -27,7 +27,7 @@ yarn-error.log*
 
 # local env files
 .env*.local
-
+.env
 # vercel
 .vercel
 
@@ -38,3 +38,6 @@ next-env.d.ts
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+
+
+

@@ -5,10 +5,9 @@ import NextAuth from "next-auth";
 import authConfig from "./auth.config";
 import { user as users } from "@/drizzle/schemas/schema";
 import { getUserById } from "@/data/adminService";
-import { StringChunk, eq } from "drizzle-orm";
-import { datetime } from "drizzle-orm/mysql-core";
 import { getTwoFactorConfirmationByUserId } from "@/data/two-factor-confirmation";
 import { getAccountByUserId } from "@/data/account";
+import { eq } from "drizzle-orm";
 
 export const {
   handlers: { GET, POST },
@@ -29,10 +28,14 @@ export const {
     },
   },
   callbacks: {
-    async signIn({ user, account }) {
+    async signIn({ user, account,profile }) {
      
       // Only check two-factor for credential accounts
-      if (account?.provider !== "credentials") return true;
+      if (account?.provider !== "credentials") {
+    
+        return true
+      };
+
       const existingUser = await getUserById(user.id!);
 
       // Check if user email is verified

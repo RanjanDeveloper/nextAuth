@@ -103,7 +103,7 @@
 //     references: [twoFactorConfirmation.userId],
 //   }),
 // }));
-import { integer, pgTable, varchar, text, timestamp, primaryKey, pgEnum, boolean } from "drizzle-orm/pg-core";
+import { integer, pgTable, text, timestamp, primaryKey, pgEnum, boolean } from "drizzle-orm/pg-core";
 import type { AdapterAccount } from "@auth/core/adapters";
 import { relations } from "drizzle-orm";
 export enum UserRoleEnum {
@@ -112,32 +112,32 @@ export enum UserRoleEnum {
 }
 export const UserRole = pgEnum("UserRole", ["ADMIN", "USER"]);
 export const user = pgTable("user", {
-  id: varchar("id", { length: 255 }).notNull().primaryKey(),
-  name: varchar("name", { length: 255 }),
-  email: varchar("email", { length: 255 }).notNull().unique(),
-  emailVerified: timestamp("emailVerified"),
-  image: varchar("image", { length: 255 }),
+  id: text('id').notNull().primaryKey(),
+  name: text("name"),
+  email: text("email").notNull().unique(),
+  emailVerified: timestamp("emailVerified", { mode: "date" }),
+  image: text("image"),
   userRole: UserRole('userRole').default('USER'),
-  password: varchar("password", { length: 255 }),
+  password: text("password"),
   isTwoFactorEnabled: boolean("isTwoFactorEnabled").default(false),
 });
 
 export const accounts = pgTable(
   "account",
   {
-    userId: varchar("userId", { length: 255 })
+    userId: text("userId")
       .notNull()
       .references(() => user.id, { onDelete: "cascade" }),
-    type: varchar("type", { length: 255 }).$type<AdapterAccount["type"]>().notNull(),
-    provider: varchar("provider", { length: 255 }).notNull(),
-    providerAccountId: varchar("providerAccountId", { length: 255 }).notNull(),
-    refresh_token: varchar("refresh_token", { length: 255 }),
-    access_token: varchar("access_token", { length: 255 }),
+    type: text("type").$type<AdapterAccount["type"]>().notNull(),
+    provider: text("provider").notNull(),
+    providerAccountId: text("providerAccountId").notNull(),
+    refresh_token: text("refresh_token"),
+    access_token: text("access_token"),
     expires_at: integer("expires_at"),
-    token_type: varchar("token_type", { length: 255 }),
-    scope: varchar("scope", { length: 255 }),
-    id_token: varchar("id_token", { length: 2048 }),
-    session_state: varchar("session_state", { length: 255 }),
+    token_type: text("token_type"),
+    scope: text("scope"),
+    id_token: text("id_token"),
+    session_state: text("session_state"),
   },
   account => ({
     pk: primaryKey({
@@ -149,10 +149,10 @@ export const accounts = pgTable(
 export const verificationToken = pgTable(
   "verificationToken",
   {
-    id: varchar("id", { length: 255 }).notNull(),
-    email: varchar("email", { length: 255 }),
+    id: text("id").notNull(),
+    email:text("email"),
     token: text("token").unique(),
-    expires:timestamp("expires"),
+    expires:timestamp("expires", { mode: "date" }),
   },
   verificationToken => ({
     pk: primaryKey({
@@ -164,10 +164,10 @@ export const verificationToken = pgTable(
 export const passwordResetToken = pgTable(
   "passwordResetToken",
   {
-    id: varchar("id", { length: 255 }).notNull(),
-    email: varchar("email", { length: 255 }),
+    id: text("id").notNull(),
+    email: text("email"),
     token: text("token").unique(),
-    expires: timestamp("expires"),
+    expires: timestamp("expires", { mode: "date" }),
   },
   passwordResetToken => ({
     pk: primaryKey({
@@ -179,10 +179,10 @@ export const passwordResetToken = pgTable(
 export const twoFactorToken = pgTable(
   "twoFactorToken",
   {
-    id: varchar("id", { length: 255 }).notNull(),
-    email: varchar("email", { length: 255 }),
-    token: text("token").unique(),
-    expires: timestamp("expires"),
+    id: text("id").notNull(),
+    email: text("email"),
+    token: text("token").notNull().unique(),
+    expires: timestamp("expires", { mode: "date" }),
   },
   twoFactorToken => ({
     pk: primaryKey({
@@ -192,8 +192,8 @@ export const twoFactorToken = pgTable(
 );
 
 export const twoFactorConfirmation = pgTable("twoFactorConfirmation", {
-  id: varchar("id", { length: 255 }).notNull().primaryKey(),
-  userId: varchar("userId", { length: 255 })
+  id: text("id").notNull().primaryKey(),
+  userId: text("userId")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
 });

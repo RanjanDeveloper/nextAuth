@@ -10,7 +10,13 @@ export default {
   providers: [
     Google({
         clientId:process.env.GOOGLE_CLIENT_ID,
-        clientSecret:process.env.GOOGLE_CLIENT_SECRET
+        clientSecret:process.env.GOOGLE_CLIENT_SECRET,
+        profile(profile) {
+          return {
+            ...profile,
+            id: profile.sub,
+          };
+        },
     }),
     Github({
         clientId:process.env.GITHUB_CLIENT_ID,

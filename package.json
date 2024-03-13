@@ -10,7 +10,7 @@
     "lint": "next lint",
     "generate": "drizzle-kit generate:pg",
     "push": "drizzle-kit push:pg",
-    "introspect": "drizzle-kit introspect:mysql",
+    "introspect": "drizzle-kit introspect:pg",
     "studio": "drizzle-kit studio",
     "test": "playwright test --ui"
   },
