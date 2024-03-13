@@ -8,7 +8,7 @@ import { getUserById } from "@/data/adminService";
 import { getTwoFactorConfirmationByUserId } from "@/data/two-factor-confirmation";
 import { getAccountByUserId } from "@/data/account";
 import { eq } from "drizzle-orm";
-import { EventCallbacks } from '@auth/core/types'
+
 export const {
   handlers: { GET, POST },
   auth,
