@@ -31,14 +31,14 @@ export default function SettingsPage({}: Props) {
       password: undefined,
       newPassword: undefined,
       role: user?.role || undefined,
-      isTwoFactorEnabled:user?.isTwoFactorEnabled || undefined
+      isTwoFactorEnabled: user?.isTwoFactorEnabled || undefined,
     },
   });
   const { update } = useSession();
+
   const [isPending, startTransition] = useTransition();
   const submitHandler = (values: z.infer<typeof SettingsSchema>) => {
     startTransition(() => {
-      
       settings(values)
         .then(data => {
           if (data.error) {

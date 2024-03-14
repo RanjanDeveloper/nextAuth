@@ -21,8 +21,9 @@ export default async function RootLayout({
 }>) {
   const session = await auth();
   return (
-    <SessionProvider session={session}>
+   
       <StoreProvider>
+         <SessionProvider session={session}>
         <html lang="en" className="h-screen">
           <body className={`${inter.className} bg-slate-300  h-screen`}>
             <Toaster />
@@ -30,7 +31,8 @@ export default async function RootLayout({
             <SpeedInsights />
           </body>
         </html>
+        </SessionProvider>
       </StoreProvider>
-    </SessionProvider>
+   
   );
 }

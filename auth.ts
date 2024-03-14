@@ -25,17 +25,12 @@ export const {
   events: {
     async linkAccount({ user, profile }) {
       await db.update(users).set({ emailVerified: new Date(),image:profile.picture}).where(eq(users.id, user.id!));
-     
     },
   },
   callbacks: {
-    async signIn({ user, account,profile }) {
-     
+    async signIn({ user, account }) {
       // Only check two-factor for credential accounts
-      if (account?.provider !== "credentials") {
-    
-        return true
-      };
+      if (account?.provider !== "credentials")  return true;
 
       const existingUser = await getUserById(user.id!);
 
@@ -54,24 +49,6 @@ export const {
       }
       return true;
     },
-    async session({ token, session }) {
-      // Add user ID and role to session if available in token
-      if (token.sub && session.user) {
-        session.user.id = token.sub;
-      }
-      if (token.role && session.user) {
-        session.user.role = token.role as UserRoleEnum;
-      }
-      if (session.user) {
-        session.user.isTwoFactorEnabled = token.isTwoFactorEnabled as boolean;
-      }
-      if (session.user) {
-        session.user.name = token.name;
-        session.user.email = token.email as string;
-        session.user.isOAuth = token.isOAuth as boolean;
-      }
-      return session;
-    },
     async jwt({ token }) {
       // If no user ID present, return the existing token
       if (!token.sub) return token;
@@ -86,10 +63,30 @@ export const {
       token.name = existingUser.name;
       token.email = existingUser.email;
       token.role = existingUser.userRole;
+      token.image = existingUser.image;
       token.isTwoFactorEnabled = existingUser.isTwoFactorEnabled;
 
       return token;
     },
+    async session({ token, session }) {
+      // Add user ID and role to session if available in token
+      if (token.sub && session.user) {
+        session.user.id = token.sub;
+      }
+      if (token.role && session.user) {
+        session.user.role = token.role as UserRoleEnum;
+      }
+   
+      if (session.user)  {
+        session.user.isTwoFactorEnabled = token.isTwoFactorEnabled as boolean;
+        session.user.name = token.name;
+        session.user.email = token.email as string;
+        session.user.isOAuth = token.isOAuth as boolean;
+        session.user.image= token.image as string;
+      }
+      return session;
+    },
+  
   },
   ...authConfig,
 });
