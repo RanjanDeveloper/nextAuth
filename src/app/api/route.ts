@@ -1,6 +1,6 @@
 // app/api/route.js
 import { NextResponse } from "next/server";
-import { getUserByEmail, getUsers } from "@/data/adminService";
+import { getUserByEmail, getUsers } from "@/data/users";
 
 
 // Handles GET requests to /api

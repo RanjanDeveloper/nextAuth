@@ -1,6 +1,6 @@
 "use server";
 import { RegisterSchema } from "@/schemas";
-import { addUser, getUserByEmail } from "@/data/adminService";
+import { addUser, getUserByEmail } from "@/data/users";
 import { sendVerificationEmail } from "@/lib/mail";
 import { generateVerificationToken } from "@/lib/tokens";
 import * as z from 'zod';

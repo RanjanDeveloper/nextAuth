@@ -5,6 +5,15 @@ const nextConfig = {
           fullUrl:true
         }
       },
+      async redirects() {
+        return [
+          {
+            source: '/',
+            destination:process.env.DEFAULT_LOGIN_REDIRECT,
+            permanent: true,
+          },  
+        ]
+      },
 
 };
 

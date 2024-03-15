@@ -4,7 +4,7 @@ import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import NextAuth from "next-auth";
 import authConfig from "./auth.config";
 import { user as users } from "@/drizzle/schemas/schema";
-import { getUserById } from "@/data/adminService";
+import { getUserById } from "@/data/users";
 import { getTwoFactorConfirmationByUserId } from "@/data/two-factor-confirmation";
 import { getAccountByUserId } from "@/data/account";
 import { eq } from "drizzle-orm";

@@ -1,6 +1,6 @@
 // app/api/route.js
 import { NextResponse } from "next/server";
-import { addUser } from "@/data/adminService";
+import { addUser } from "@/data/users";
 import { currentRole } from "@/lib/auth";
 import { UserRoleEnum } from "@/drizzle/schemas/schema";
 

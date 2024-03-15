@@ -3,7 +3,7 @@ import { twoFactorToken as TwoFactorTokenSchema, twoFactorConfirmation } from "@
 import { getTwoFactorTokenByEmail } from "@/data/two-factor-token";
 import { LoginSchema } from "@/schemas";
 import { db } from "@/lib/db";
-import { getUserByEmail } from "@/data/adminService";
+import { getUserByEmail } from "@/data/users";
 import { sendTwoFactorTokenEmail, sendVerificationEmail } from "@/lib/mail";
 import { generateVerificationToken, generateTwoFactorToken } from "@/lib/tokens";
 import { getTwoFactorConfirmationByUserId } from "@/data/two-factor-confirmation";

@@ -2,7 +2,7 @@
 
 import { db } from "@/lib/db";
 import { user, verificationToken } from "@/drizzle/schemas/schema";
-import { getUserByEmail } from "@/data/adminService";
+import { getUserByEmail } from "@/data/users";
 import { getVerificationTokenByToken } from "@/data/verification-token";
 import { eq } from "drizzle-orm";
 

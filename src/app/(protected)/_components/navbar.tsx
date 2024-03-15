@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import UserButton from "@/components/auth/user-button";
+
 
 type Props = {};
 
@@ -25,7 +25,7 @@ export default function Navbar({}: Props) {
           <Link href="/settings">Settings</Link>
         </Button>
       </div>
-      <UserButton />
+      
     </div>
   );
 }

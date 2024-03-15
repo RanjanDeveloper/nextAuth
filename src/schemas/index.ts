@@ -23,6 +23,13 @@ export const ResetSchema = z.object({
 export const NewPasswordSchema = z.object({
   password: z.string().min(1, { message: "Password is required" }).min(8, { message: "Password is too short" }),
 });
+export const AddUserSchema= z.object({
+  name: z.string().min(1, { message: "Name is required" }),
+  email: z.string().min(1, { message: "Email is required" }).email("This is not a valid email"),
+  password: z.string().min(1, { message: "Password is required" }).min(8, { message: "Password is too short" }),
+  isTwoFactorEnabled:z.boolean(),
+});
+
 
 export const SettingsSchema = z
   .object({
