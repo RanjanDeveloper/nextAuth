@@ -29,6 +29,12 @@ export const getUsersByRole = async(role:UserRoleEnum)=>{
   try {
     
     const user =await db.query.user.findMany({
+      columns:{
+        id:true,
+        name:true,
+        email:true,
+        isTwoFactorEnabled:true
+      },
       where: (user, { eq }) => eq(user.userRole, role),
     });
   

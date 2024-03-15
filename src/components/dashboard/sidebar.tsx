@@ -33,7 +33,7 @@ export default function Sidebar({}: Props) {
       },
   ];
   return (
-    <div className="lg:w-[300px] bg-white border-r py-4">
+    <div className="lg:w-[300px] lg:sticky bg-white border-r py-4">
       <div className="px-3 py-2 space-y-1">
         {menuList.map(menuitem => (
             menuitem.allowedRoles.includes(role) &&

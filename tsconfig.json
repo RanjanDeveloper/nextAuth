@@ -22,7 +22,8 @@
     ],
     "paths": {
       "@/*": ["./src/*"],
-      "@root/*":["./*"]
+      "@root/*":["./*"],
+      "@public/*":["./public/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/page.tsx", "next.config.mjs", "postcss.config.ts", "postcss.config.ts", "src/lib/migrate.mjs"],

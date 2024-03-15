@@ -12,7 +12,7 @@ export default async function RootLayout({
     <Topbar />
     <div className="flex h-screen pt-14">
       <Sidebar />
-      <div className="p-4 bg-white w-full"> {children}</div>
+      <div className="p-4 bg-white w-full overflow-y-auto"> {children}</div>
     </div>
     </>
   );
