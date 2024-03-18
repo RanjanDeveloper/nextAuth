@@ -30,6 +30,12 @@ export const AddUserSchema= z.object({
   isTwoFactorEnabled:z.boolean(),
 });
 
+export const EditUserSchema= z.object({
+  name: z.optional(z.string()),
+  email: z.optional(z.string().email("This is not a valid email")),
+  password: z.optional(z.string().min(8, { message: "Password is too short" })),
+  isTwoFactorEnabled:z.optional(z.boolean()),
+});
 
 export const SettingsSchema = z
   .object({

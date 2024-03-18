@@ -9,36 +9,44 @@ import FormError from "@/components/form-error";
 import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
 import { useCurrentUser } from "@/app/hooks/use-current-user";
-import { AddUserSchema } from "@/schemas";
+import { EditUserSchema } from "@/schemas";
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { adduser } from "@/actions/admin";
-type Props = {};
+import { edituser } from "@/actions/admin";
+import { FiEdit } from "react-icons/fi";
+type Props = {
+    user:any,
+    isOpen:boolean,
+    setIsOpen:()=> void;
+}
 
-export default function AddUser({}: Props) {
-  const user = useCurrentUser();
+export default function EditUser({user,isOpen,setIsOpen}: Props){
+//   const user = useCurrentUser();
   const [success, setSuccess] = useState<string | undefined>();
   const [error, setError] = useState<string | undefined>();
 
-  const form = useForm<z.infer<typeof AddUserSchema>>({
-    resolver: zodResolver(AddUserSchema),
+  const form = useForm<z.infer<typeof EditUserSchema>>({
+    resolver: zodResolver(EditUserSchema),
     defaultValues: {
-      name: "",
-      email: "",
-      password: "",
-      isTwoFactorEnabled: false,
+      name: user.name || undefined,
+      email: user.email || undefined,
+      password:undefined,
+      isTwoFactorEnabled: user.isTwoFactorEnabled || undefined,
     },
   });
+  console.log({user})
   const [isPending, startTransition] = useTransition();
-  const submitHandler = (values: z.infer<typeof AddUserSchema>) => {
+  const submitHandler = (values: z.infer<typeof EditUserSchema>) => {
     startTransition(() => {
-      adduser(values)
+      const id:string = user.id;
+      edituser(values,id)
         .then(data => {
           if (data.error) {
             setError(data.error);
           }
           if (data.success) {
+            
             setSuccess(data.success);
           }
         })
@@ -46,18 +54,13 @@ export default function AddUser({}: Props) {
     });
   };
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button className="font-bold">
-          <FiPlus className="size-4 mr-2" />
-          Add User
-        </Button>
-      </DialogTrigger>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      
     
           <DialogContent>
           <Form {...form}>
         <form className="space-y-6" onSubmit={form.handleSubmit(submitHandler)}>
-            <DialogHeader>Add User</DialogHeader>
+            <DialogHeader>Edit User</DialogHeader>
 
             <div className="space-y-4">
               <FormField
@@ -122,7 +125,7 @@ export default function AddUser({}: Props) {
             <FormError message={error} />
 
             <DialogFooter>
-              <Button type="submit">Add</Button>
+              <Button type="submit">Update</Button>
             </DialogFooter>
             </form>
       </Form>

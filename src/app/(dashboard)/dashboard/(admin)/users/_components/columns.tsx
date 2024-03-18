@@ -1,16 +1,9 @@
 "use client"
 
 import { ColumnDef } from "@tanstack/react-table"
-import { 
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,DropdownMenuSeparator
 
- } from "@/components/ui/dropdown-menu";
-import { FiMoreHorizontal } from "react-icons/fi";
-import { Button } from "@/components/ui/button";
+import MoreActions from "./more-actions";
+import Hi from "./hi";
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 export type Users = {
@@ -18,9 +11,7 @@ export type Users = {
   name: string | null
   email: string
   isTwoFactorEnabled:boolean | null
-
 }
-
 export const columns: ColumnDef<Users>[] = [
   {
     accessorKey: "name",
@@ -36,28 +27,7 @@ export const columns: ColumnDef<Users>[] = [
   },
   {
     id:'actions',
-    cell:({row}) => {
-      const user = row.original;
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="size-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <FiMoreHorizontal className="size-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => console.log(user)}
-            >
-              user
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-          
-          </DropdownMenuContent>
-        </DropdownMenu>
-      )
-    }
+    cell:({row}) => <MoreActions row={row}/>,
+  
   }
 ]

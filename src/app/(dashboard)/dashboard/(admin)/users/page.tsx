@@ -6,13 +6,13 @@ import { columns } from "./_components/columns";
 import { DataTable } from "./_components/data-table";
 import Adduser from "./_components/add-user";
 import Rolegate from "@/components/auth/role-gate";
-
+import { Users } from "./_components/columns";
 
 type Props = {};
 
 export default async function Userspage({}: Props) {
 
-  const users: any = await getUsersByRole(UserRoleEnum.USER);
+  const users:any = await getUsersByRole(UserRoleEnum.USER);
   console.log("users", { users });
   return (
     <Rolegate allowedRole={UserRoleEnum.ADMIN}>
