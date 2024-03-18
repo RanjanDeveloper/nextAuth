@@ -4,8 +4,6 @@ import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuIte
 import { FiMoreHorizontal } from "react-icons/fi";
 import { Button } from "@/components/ui/button";
 import EditUser from "./edit-user";
-import { Users } from "./columns";
-import { DialogTrigger } from "@radix-ui/react-dialog";
 import { FiEdit } from "react-icons/fi";
 
 type Props<TData> = {

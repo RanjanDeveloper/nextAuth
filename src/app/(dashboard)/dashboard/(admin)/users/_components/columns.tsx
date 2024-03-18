@@ -3,7 +3,6 @@
 import { ColumnDef } from "@tanstack/react-table"
 
 import MoreActions from "./more-actions";
-import Hi from "./hi";
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 export type Users = {
