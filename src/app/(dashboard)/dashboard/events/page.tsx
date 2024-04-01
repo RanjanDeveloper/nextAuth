@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import Link from "next/link";
 import EventsList from "./events-list";
-import { revalidatePath } from "next/cache";
+
 
 type Props = {};
 
