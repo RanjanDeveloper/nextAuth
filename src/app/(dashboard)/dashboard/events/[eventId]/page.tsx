@@ -12,15 +12,19 @@ type Props = {
 export default async function EventDetailsPage({ params }: Props) {
   const payers: any = await getCurrentEvent(params.eventId);
 
-  return <>{payers.error ? <h1>{payers.error}</h1> : (
-    <div className="space-y-3">
+  return (
+    <>
+      {payers.error ? (
+        <h1>{payers.error}</h1>
+      ) : (
+        <div className="space-y-3">
           <div className="flex justify-end">
-          <AddPayer eventId={params.eventId}/>
+            <AddPayer eventId={params.eventId} />
           </div>
-          
+
           <DataTable columns={columns} data={payers ?? []} />
         </div>
-  )
-  
-  }</>;
+      )}
+    </>
+  );
 }

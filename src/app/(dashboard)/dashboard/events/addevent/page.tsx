@@ -19,12 +19,12 @@ import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
+import { revalidatePath } from "next/cache";
 
 type Props = {};
 
 export default function AddEventsPage({}: Props) {
   const [success, setSuccess] = useState<string | undefined>();
-
   const [error, setError] = useState<string | undefined>();
   const [isCalenderOpen, setIsCalenderOpen] = useState<boolean>(false);
   const form = useForm<z.infer<typeof AddEventsSchema>>({
@@ -46,7 +46,6 @@ export default function AddEventsPage({}: Props) {
           }
           if (data?.success) {
             setSuccess(data.success);
-         
           }
         })
         .catch(() => setError("Something went wrong!"));

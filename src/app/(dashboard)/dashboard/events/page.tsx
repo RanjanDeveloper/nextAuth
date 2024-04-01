@@ -5,12 +5,11 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import Link from "next/link";
 import EventsList from "./events-list";
+import { revalidatePath } from "next/cache";
 
 type Props = {};
 
-export default async function EventsPage({}: Props) {
-
-
+export default function EventsPage({}: Props) {
   return (
     <div className="space-y-5  ">
     <EventsList />

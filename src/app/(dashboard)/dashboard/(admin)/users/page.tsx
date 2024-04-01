@@ -20,7 +20,6 @@ export default async function Userspage({}: Props) {
           <div className="flex justify-end">
           <AddUser />
           </div>
-          
           <DataTable columns={columns} data={users ?? []} />
         </div>
       </div>

@@ -13,6 +13,7 @@ import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { addPayer } from "@/actions/payers";
+import { revalidatePath } from "next/cache";
 
 type Props = {
   isOpen:boolean,
@@ -42,6 +43,7 @@ export default function AddPayerDialogue({isOpen,onAddUserOpenChanges,eventId}: 
           }
           if (data.success) {
             setSuccess(data.success);
+            revalidatePath(`/dashboard/events/${eventId}`)
           }
         })
         .catch(() => setError("Something went wrong!"));
