@@ -1,39 +1,43 @@
 "use client";
 import React, { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
-import { FiPlus } from "react-icons/fi";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent,DialogFooter, DialogHeader } from "@/components/ui/dialog";
 import { FormField, Form, FormItem, FormDescription, FormControl, FormMessage, FormLabel } from "@/components/ui/form";
 import FormSuccess from "@/components/form-success";
 import FormError from "@/components/form-error";
 import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
-import { useCurrentUser } from "@/app/hooks/use-current-user";
-import { AddUserSchema } from "@/schemas";
+import { EditUserSchema } from "@/schemas";
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { adduser } from "@/actions/admin";
-type Props = {};
+import { edituser } from "@/actions/admin";
 
-export default function AddUser({}: Props) {
-  const user = useCurrentUser();
+type Props = {
+  user: any;
+  isOpen: boolean;
+  onEditUserOpenChanges: any;
+};
+
+export default function EditPayerDialogue({ user, isOpen, onEditUserOpenChanges }: Props) {
+  //   const user = useCurrentUser();
   const [success, setSuccess] = useState<string | undefined>();
   const [error, setError] = useState<string | undefined>();
 
-  const form = useForm<z.infer<typeof AddUserSchema>>({
-    resolver: zodResolver(AddUserSchema),
+  const form = useForm<z.infer<typeof EditUserSchema>>({
+    resolver: zodResolver(EditUserSchema),
     defaultValues: {
-      name: "",
-      email: "",
-      password: "",
-      isTwoFactorEnabled: false,
+      name: user.name || undefined,
+      email: user.email || undefined,
+      password: undefined,
+      isTwoFactorEnabled: user.isTwoFactorEnabled || undefined,
     },
   });
   const [isPending, startTransition] = useTransition();
-  const submitHandler = (values: z.infer<typeof AddUserSchema>) => {
+  const submitHandler = (values: z.infer<typeof EditUserSchema>) => {
     startTransition(() => {
-      adduser(values)
+      const id: string = user.id;
+      edituser(values, id)
         .then(data => {
           if (data.error) {
             setError(data.error);
@@ -46,18 +50,11 @@ export default function AddUser({}: Props) {
     });
   };
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button className="font-bold">
-          <FiPlus className="size-4 mr-2" />
-          Add User
-        </Button>
-      </DialogTrigger>
-    
-          <DialogContent>
-          <Form {...form}>
-        <form className="space-y-6" onSubmit={form.handleSubmit(submitHandler)}>
-            <DialogHeader>Add User</DialogHeader>
+    <Dialog open={isOpen} onOpenChange={onEditUserOpenChanges}>
+      <DialogContent>
+        <Form {...form}>
+          <form className="space-y-6" onSubmit={form.handleSubmit(submitHandler)}>
+            <DialogHeader className="font-bold">Edit User</DialogHeader>
 
             <div className="space-y-4">
               <FormField
@@ -122,12 +119,11 @@ export default function AddUser({}: Props) {
             <FormError message={error} />
 
             <DialogFooter>
-              <Button type="submit">Add</Button>
+              <Button type="submit">Update</Button>
             </DialogFooter>
-            </form>
-      </Form>
-          </DialogContent>
- 
+          </form>
+        </Form>
+      </DialogContent>
     </Dialog>
   );
 }

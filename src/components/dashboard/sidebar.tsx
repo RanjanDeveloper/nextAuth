@@ -2,12 +2,12 @@
 import { useCurrentRole } from "@/app/hooks/use-current-role";
 import { UserRoleEnum } from "@/drizzle/schemas/schema";
 import { cn } from "@/lib/utils";
+import { CalendarCheck,User,Settings } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React, { Fragment } from "react";
 import { FiSettings,FiCloud ,FiUser} from "react-icons/fi";
 import { v4 as uuid } from "uuid";
-
 type Props = {};
 interface MenuItem {
   name: string;
@@ -21,15 +21,21 @@ export default function Sidebar({}: Props) {
   const menuList: MenuItem[] = [
     {
       name: "Settings",
-      icon: <FiSettings className="size-4" />,
+      icon: <Settings className="size-4" />,
       path: "/dashboard/settings",
       allowedRoles: ["ADMIN","USER"]
     },
     {
         name: "Users",
-        icon: <FiUser className="size-4" />,
+        icon: <User className="size-4" />,
         path: "/dashboard/users",
         allowedRoles: ["ADMIN"]
+      },
+      {
+        name: "Events",
+        icon: <CalendarCheck className="size-4" />,
+        path: "/dashboard/events",
+        allowedRoles: ["ADMIN","USER"]
       },
   ];
   return (
@@ -39,7 +45,7 @@ export default function Sidebar({}: Props) {
             menuitem.allowedRoles.includes(role) &&
           
           <Link key={uuid()} className="block" href={menuitem.path}>
-            <div className={cn("flex items-center font-medium hover:bg-slate-100 p-3 space-x-2 rounded-md", pathname === menuitem.path && "bg-slate-100")}>
+            <div className={cn("flex items-center font-medium hover:bg-slate-100 p-3 space-x-2 rounded-md",(pathname === menuitem.path || pathname.startsWith(menuitem.path + "/")) && "bg-slate-100")}>
               <span>{menuitem.icon}</span>
               <span>{menuitem.name}</span>
             </div>

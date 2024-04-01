@@ -3,7 +3,7 @@ import { Row } from "@tanstack/react-table";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { FiMoreHorizontal } from "react-icons/fi";
 import { Button } from "@/components/ui/button";
-import EditUserDialogue from "./edit-user-dialogue";
+import EditUserDialogue from "./edit-payer-dialogue";
 import { SquarePenIcon } from "lucide-react";
 
 type Props<TData> = {
@@ -14,7 +14,7 @@ export default function MoreActions<TData>({ row }: Props<TData>) {
   const user = row.original;
   const [openEdit, setOpenEdit] = useState<boolean>(false);
 
-  const handleEditUser = () => {
+  const handleEditPayer = () => {
     setOpenEdit(true);
   };
 
@@ -30,7 +30,7 @@ export default function MoreActions<TData>({ row }: Props<TData>) {
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
           <DropdownMenuItem>
-            <div className="flex items-center font-semibold w-full grow cursor-pointer" onClick={handleEditUser}>
+            <div className="flex items-center font-semibold w-full grow cursor-pointer" onClick={handleEditPayer}>
               <SquarePenIcon className="h-4 w-4 mr-2" />
               Edit
             </div>

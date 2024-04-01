@@ -1,4 +1,5 @@
-import { UserRoleEnum } from "@/drizzle/schemas/schema";
+import { EventsEnum, UserRoleEnum } from "@/drizzle/schemas/schema";
+import { datetime } from "drizzle-orm/mysql-core";
 import * as z from "zod";
 
 export const LoginSchema = z.object({
@@ -23,19 +24,25 @@ export const ResetSchema = z.object({
 export const NewPasswordSchema = z.object({
   password: z.string().min(1, { message: "Password is required" }).min(8, { message: "Password is too short" }),
 });
-export const AddUserSchema= z.object({
+export const AddUserSchema = z.object({
   name: z.string().min(1, { message: "Name is required" }),
   email: z.string().min(1, { message: "Email is required" }).email("This is not a valid email"),
   password: z.string().min(1, { message: "Password is required" }).min(8, { message: "Password is too short" }),
-  isTwoFactorEnabled:z.boolean(),
+  isTwoFactorEnabled: z.boolean(),
 });
-
-export const EditUserSchema= z.object({
+export const AddPayerSchema = z.object({
+  name: z.string().min(1, { message: "Name is required" }),
+  city: z.optional(z.string().min(1, { message: "City is required" })),
+  amount:z.number()
+ 
+});
+export const EditUserSchema = z.object({
   name: z.optional(z.string()),
   email: z.optional(z.string().email("This is not a valid email")),
   password: z.optional(z.string().min(8, { message: "Password is too short" })),
-  isTwoFactorEnabled:z.optional(z.boolean()),
+  isTwoFactorEnabled: z.optional(z.boolean()),
 });
+
 
 export const SettingsSchema = z
   .object({
@@ -72,3 +79,16 @@ export const SettingsSchema = z
       path: ["password"],
     }
   );
+
+export const AddEventsSchema = z.object({
+  title: z.string().min(1, { message: "Name is required" }),
+  description:z.optional(z.string()),
+  eventType:z.enum([EventsEnum.MARRIAGE,EventsEnum.ENGAGEMENT,EventsEnum.FUNERAL,EventsEnum.OTHER],{
+    required_error: "Type is required",
+  }),
+  date:z.date({
+    required_error: "Date is required",
+    invalid_type_error: "That's not a date!",
+  }),
+  place:z.string().min(1, { message: "Place is required" })
+});

@@ -1,3 +1,4 @@
+import { timestamp } from 'drizzle-orm/pg-core';
 // import { int, mysqlTable, varchar, text, datetime, primaryKey, mysqlEnum, boolean } from "drizzle-orm/mysql-core";
 // import type { AdapterAccount } from "@auth/core/adapters";
 // import { relations } from "drizzle-orm";
@@ -103,25 +104,31 @@
 //     references: [twoFactorConfirmation.userId],
 //   }),
 // }));
-import { integer, pgTable, text, timestamp, primaryKey, pgEnum, boolean } from "drizzle-orm/pg-core";
+import { integer, pgTable, text,  primaryKey, pgEnum, boolean } from "drizzle-orm/pg-core";
 import type { AdapterAccount } from "@auth/core/adapters";
 import { relations } from "drizzle-orm";
 export enum UserRoleEnum {
   USER = "USER",
   ADMIN = "ADMIN",
 }
+export enum EventsEnum {
+  MARRIAGE = "MARRIAGE",
+  ENGAGEMENT = "ENGAGEMENT",
+  FUNERAL = "FUNERAL",
+  OTHER = "OTHER",
+}
 export const UserRole = pgEnum("UserRole", ["ADMIN", "USER"]);
 export const user = pgTable("user", {
-  id: text('id').notNull().primaryKey(),
+  id: text("id").notNull().primaryKey(),
   name: text("name"),
-  email: text("email").notNull().unique(),
+  email: text("email").notNull(),
   emailVerified: timestamp("emailVerified", { mode: "date" }),
   image: text("image"),
-  userRole: UserRole('userRole').default('USER'),
+  userRole: UserRole("userRole").default("USER"),
   password: text("password"),
   isTwoFactorEnabled: boolean("isTwoFactorEnabled").default(false),
+  timestamp:timestamp('timestamp', { mode: "date" }).defaultNow()
 });
-
 export const accounts = pgTable(
   "account",
   {
@@ -150,9 +157,9 @@ export const verificationToken = pgTable(
   "verificationToken",
   {
     id: text("id").notNull(),
-    email:text("email"),
+    email: text("email"),
     token: text("token").unique(),
-    expires:timestamp("expires", { mode: "date" }),
+    expires: timestamp("expires", { mode: "date" }),
   },
   verificationToken => ({
     pk: primaryKey({
@@ -197,8 +204,29 @@ export const twoFactorConfirmation = pgTable("twoFactorConfirmation", {
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
 });
-
-export const userRelations = relations(user, ({ one }) => ({
+export const eventsEnum = pgEnum("eventType", ["MARRIAGE", "ENGAGEMENT", "FUNERAL", "OTHER"]);
+export const events = pgTable("events", {
+  id: text("id").notNull().primaryKey(),
+  userId: text("userId")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  title: text("title").notNull(),
+  eventType: eventsEnum("eventType"),
+  dateTime: timestamp("dateTime").notNull(),
+  location: text("location"),
+  timestamp:timestamp('timestamp', { mode: "date" }).defaultNow()
+});
+export const payers = pgTable("payers", {
+  id: text("id").notNull().primaryKey(),
+  eventId: text("eventId")
+    .notNull()
+    .references(() => events.id, { onDelete: "cascade" }),
+  name:text("name").notNull(),
+  city:text("city"),
+  amount:integer("amount").notNull(),
+  timestamp:timestamp('timestamp', { mode: "date" }).defaultNow()
+});
+export const userRelations = relations(user, ({ one, many }) => ({
   accounts: one(accounts, {
     fields: [user.id],
     references: [accounts.userId],
@@ -206,5 +234,13 @@ export const userRelations = relations(user, ({ one }) => ({
   twoFactorConfirmation: one(twoFactorConfirmation, {
     fields: [user.id],
     references: [twoFactorConfirmation.userId],
+  }),
+  events: many(events),
+}));
+
+export const eventsRelations = relations(events, ({ one }) => ({
+  users: one(user, {
+    fields: [events.userId],
+    references: [user.id],
   }),
 }));

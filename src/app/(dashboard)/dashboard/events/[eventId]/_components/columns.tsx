@@ -7,14 +7,14 @@ import DataTableColumnHeader from "./data-table-column-header";
 // You can use a Zod schema here if you want.
 
 
-export type Users = {
+export type Payers = {
   id: string
-  name: string | null
-  email: string
-  isTwoFactorEnabled:boolean | null
+  name: string 
+  city: string
+  amount:number
 }
 
-export const columns: ColumnDef<Users>[] = [
+export const columns: ColumnDef<Payers>[] = [
   {
     accessorKey: "name",
     header: ({column})=> {
@@ -24,18 +24,18 @@ export const columns: ColumnDef<Users>[] = [
     } 
   },
   {
-    accessorKey: "email",
+    accessorKey: "city",
     header: ({column})=> {
       return(
-        <DataTableColumnHeader column={column} title="Email"/>
+        <DataTableColumnHeader column={column} title="City"/>
       )
     } 
   },
   {
-    accessorKey: "isTwoFactorEnabled",
+    accessorKey: "amount",
     header: ({column})=> {
       return(
-        <DataTableColumnHeader column={column} title="isTwoFactorEnabled"/>
+        <DataTableColumnHeader column={column} title="Amount"/>
       )
     } 
   },
