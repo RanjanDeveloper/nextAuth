@@ -42,7 +42,7 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
 
   return (
     <>
-      <Input value={(table.getColumn("name")?.getFilterValue() as string) ?? ""} onChange={event => table.getColumn("name")?.setFilterValue(event.target.value)} className="p-2 font-lg shadow border w-1/4" placeholder="Filter name..." />
+      <Input value={(table.getColumn("title")?.getFilterValue() as string) ?? ""} onChange={event => table.getColumn("title")?.setFilterValue(event.target.value)} className="p-2 font-lg shadow border w-1/4" placeholder="Filter title..." />
       <div className="rounded-md border">
         <Table>
           <TableHeader>

@@ -33,7 +33,13 @@ export const AddUserSchema = z.object({
 export const AddPayerSchema = z.object({
   name: z.string().min(1, { message: "Name is required" }),
   city: z.optional(z.string().min(1, { message: "City is required" })),
-  amount:z.number()
+  amount:z.coerce.number().nonnegative({ message: "Amount must be at least 0" }).default(0)
+ 
+});
+export const EditPayerSchema = z.object({
+  name:z.optional( z.string().min(1, { message: "Name is required" })),
+  city: z.optional(z.string().min(1, { message: "City is required" })),
+  amount:z.coerce.number().nonnegative({ message: "Amount must be at least 0" }).default(0)
  
 });
 export const EditUserSchema = z.object({
@@ -80,9 +86,19 @@ export const SettingsSchema = z
     }
   );
 
-export const AddEventsSchema = z.object({
+export const AddEventSchema = z.object({
   title: z.string().min(1, { message: "Name is required" }),
-  description:z.optional(z.string()),
+  eventType:z.enum([EventsEnum.MARRIAGE,EventsEnum.ENGAGEMENT,EventsEnum.FUNERAL,EventsEnum.OTHER],{
+    required_error: "Type is required",
+  }),
+  date:z.date({
+    required_error: "Date is required",
+    invalid_type_error: "That's not a date!",
+  }),
+  place:z.string().min(1, { message: "Place is required" })
+});
+export const EditEventSchema = z.object({
+  title: z.string().min(1, { message: "Name is required" }),
   eventType:z.enum([EventsEnum.MARRIAGE,EventsEnum.ENGAGEMENT,EventsEnum.FUNERAL,EventsEnum.OTHER],{
     required_error: "Type is required",
   }),

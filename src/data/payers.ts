@@ -1,5 +1,5 @@
 'use server';
-import { AddEventsSchema } from '@/schemas';
+import { AddEventSchema } from '@/schemas';
 import { EventsEnum, events, payers } from "@/drizzle/schemas/schema";
 import { db } from "@/lib/db";
 import { z } from 'zod';

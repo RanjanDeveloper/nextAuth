@@ -1,61 +1,69 @@
 "use client";
 import React, { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
-import { DialogFooter, DialogHeader } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogFooter, DialogHeader } from "@/components/ui/dialog";
 import { FormField, Form, FormItem, FormControl, FormMessage, FormLabel } from "@/components/ui/form";
 import { Select, SelectValue, SelectTrigger, SelectContent, SelectItem } from "@/components/ui/select";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
-import FormSuccess from "@/components/form-success";
-import FormError from "@/components/form-error";
+import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
-import { AddEventsSchema } from "@/schemas";
+import { EditEventSchema } from "@/schemas";
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { addEvent } from "@/actions/events";
-import { EventsEnum } from "@/drizzle/schemas/schema";
+import { addPayer } from "@/actions/payers";
+import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
+import { editEvent } from "@/actions/events";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
-import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
-import { revalidatePath } from "next/cache";
+import { EventsEnum } from "@/drizzle/schemas/schema";
+import { Events } from "./columns";
+type Props = {
+  isOpen:boolean,
+  onEditEventOpenChanges:React.Dispatch<React.SetStateAction<boolean>>;
+  event:Events
+};
 
-
-type Props = {};
-
-export default function AddEventsPage({}: Props) {
-  const [success, setSuccess] = useState<string | undefined>();
-  const [error, setError] = useState<string | undefined>();
+export default function EditEventDialogue({isOpen,onEditEventOpenChanges,event}: Props) {
   const [isCalenderOpen, setIsCalenderOpen] = useState<boolean>(false);
-  const form = useForm<z.infer<typeof AddEventsSchema>>({
-    resolver: zodResolver(AddEventsSchema),
+  const [isPending,startTransition] = useTransition();
+  
+  const form = useForm<z.infer<typeof EditEventSchema>>({
+    resolver: zodResolver(EditEventSchema),
     defaultValues: {
-      title: "",
-      eventType: undefined,
-      date: undefined,
-      place: "",
+      title:  event.title,
+      eventType: event.eventType,
+      date: event.dateTime,
+      place:event.location,
     },
   });
-  const [isPending, startTransition] = useTransition();
-  const submitHandler = (values: z.infer<typeof AddEventsSchema>) => {
+
+  const submitHandler = (values: z.infer<typeof EditEventSchema>) => {
     startTransition(() => {
-      addEvent(values)
+     
+    editEvent(values,event.id)
         .then(data => {
           if (data?.error) {
-            setError(data.error);
+            toast.error(data.error);
           }
           if (data?.success) {
-            setSuccess(data.success);
+            toast.success(data.success);
+            onEditEventOpenChanges(false);
           }
         })
-        .catch(() => setError("Something went wrong!"));
+        .catch(() => toast.error("Something went wrong!"));
     });
   };
   return (
-    <div className="max-w-96">
-      <Form {...form}>
+    <Dialog open={isOpen} onOpenChange={onEditEventOpenChanges} modal>
+          <DialogContent onInteractOutside={(e) => {
+          e.preventDefault();
+        }}>
+    <Form {...form}>
         <form className="space-y-6" onSubmit={form.handleSubmit(submitHandler)}>
-          <DialogHeader className="font-bold">Add Event</DialogHeader>
+          <DialogHeader className="font-bold">Edit Event</DialogHeader>
 
           <div className="space-y-4 ">
             <FormField
@@ -143,16 +151,15 @@ export default function AddEventsPage({}: Props) {
             />
 
           </div>
-          <FormSuccess message={success} />
-          <FormError message={error} />
-
           <DialogFooter className="sm:justify-start">
             <Button type="submit" disabled={isPending}>
-              Add
+              Update
             </Button>
           </DialogFooter>
         </form>
       </Form>
-    </div>
+          </DialogContent>
+ 
+    </Dialog>
   );
 }

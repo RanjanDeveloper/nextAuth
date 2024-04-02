@@ -4,17 +4,17 @@ import { Row } from "@tanstack/react-table";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { FiMoreHorizontal } from "react-icons/fi";
 import { Button } from "@/components/ui/button";
-import EditPayerDialogue from "./edit-payer-dialogue";
+import EditEventDialogue from "./edit-event-dialogue";
 import { SquarePenIcon, Trash2 } from "lucide-react";
-import { deletePayer } from "@/actions/payers";
-import DeletePayerDialogue from "./delete-payer-dialogue";
+import { deleteEvent } from "@/actions/events";
+import DeleteEventDialogue from "./delete-event-dialogue";
 
 type Props<TData> = {
   row: Row<TData>;
 };
 
 export default function MoreActions<TData>({ row }: Props<TData>) {
-  const payer: any = row.original;
+  const event: any = row.original;
   const [openEdit, setOpenEdit] = useState<boolean>(false);
   const [openDelete, setOpenDelete] = useState<boolean>(false);
   const handleEditPayer = () => {
@@ -50,8 +50,8 @@ export default function MoreActions<TData>({ row }: Props<TData>) {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-      {openEdit && <EditPayerDialogue isOpen={openEdit} onEditPayerOpenChanges={setOpenEdit} payer={payer} />}
-      {openDelete && <DeletePayerDialogue isOpen={openDelete} onDeletePayerOpenChanges={setOpenDelete} payer={payer} />}
+      {openEdit && <EditEventDialogue isOpen={openEdit} onEditEventOpenChanges={setOpenEdit} event={event} />}
+      {openDelete && <DeleteEventDialogue isOpen={openDelete} onDeleteEventOpenChanges={setOpenDelete} event={event} />}
     </>
   );
 }

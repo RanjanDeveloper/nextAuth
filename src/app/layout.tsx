@@ -26,7 +26,7 @@ export default async function RootLayout({
          <SessionProvider session={session}>
         <html lang="en" className="h-screen">
           <body className={`${inter.className} bg-white h-screen `}>
-            <Toaster />
+            <Toaster richColors/>
             {children}
             <SpeedInsights />
           </body>

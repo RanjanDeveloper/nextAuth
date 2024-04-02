@@ -1,16 +1,13 @@
-import { datetime } from 'drizzle-orm/mysql-core';
-
-
 'use server';
-import { AddEventsSchema } from '@/schemas';
 import { EventsEnum, events } from "@/drizzle/schemas/schema";
 import { db } from "@/lib/db";
-import { z } from 'zod';
 import {v4 as uuid} from 'uuid'
-export const getEventsById = async (id:string) => {
+import { currentUser } from '@/lib/auth';
+export const getCurrentUserEvents = async () => {
     try{
+      const user = await currentUser()!;
       const events = await db.query.events.findMany({
-        where:(events,{eq})=> eq(events.userId,id)
+        where:(events,{eq})=> eq(events.userId,user?.id as string)
       });
      
       return events;

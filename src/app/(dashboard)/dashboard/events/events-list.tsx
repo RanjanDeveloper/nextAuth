@@ -1,5 +1,5 @@
 import React from "react";
-import { getEventsById } from "@/data/events";
+import { getCurrentUserEvents } from "@/data/events";
 import { currentUser } from "@/lib/auth";
 
 import Link from "next/link";
@@ -9,8 +9,8 @@ type Props = {};
 
 export default async function EventsList({}: Props) {
 
-  const user = await currentUser();
-  const events = await getEventsById(user?.id!);
+  // const user = await currentUser();
+  const events = await getCurrentUserEvents();
   return (
     <>
       {events?.length !== 0 ? (

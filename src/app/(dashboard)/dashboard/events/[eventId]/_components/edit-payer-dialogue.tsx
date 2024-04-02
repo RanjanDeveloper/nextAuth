@@ -1,60 +1,59 @@
 "use client";
-import React, { useState, useTransition } from "react";
+import React, { useTransition } from "react";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent,DialogFooter, DialogHeader } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogFooter, DialogHeader } from "@/components/ui/dialog";
 import { FormField, Form, FormItem, FormDescription, FormControl, FormMessage, FormLabel } from "@/components/ui/form";
-import FormSuccess from "@/components/form-success";
-import FormError from "@/components/form-error";
-import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
-import { EditUserSchema } from "@/schemas";
+import { EditPayerSchema } from "@/schemas";
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { edituser } from "@/actions/admin";
+import { editPayer } from "@/actions/payers";
+import { toast } from "sonner";
+import { Payers } from "./columns";
 
 type Props = {
-  user: any;
+  payer: Payers;
   isOpen: boolean;
-  onEditUserOpenChanges: any;
+  onEditPayerOpenChanges: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-export default function EditPayerDialogue({ user, isOpen, onEditUserOpenChanges }: Props) {
-  //   const user = useCurrentUser();
-  const [success, setSuccess] = useState<string | undefined>();
-  const [error, setError] = useState<string | undefined>();
-
-  const form = useForm<z.infer<typeof EditUserSchema>>({
-    resolver: zodResolver(EditUserSchema),
+export default function EditPayerDialogue({ payer, isOpen, onEditPayerOpenChanges }: Props) {
+  const form = useForm<z.infer<typeof EditPayerSchema>>({
+    resolver: zodResolver(EditPayerSchema),
     defaultValues: {
-      name: user.name || undefined,
-      email: user.email || undefined,
-      password: undefined,
-      isTwoFactorEnabled: user.isTwoFactorEnabled || undefined,
+      name: payer.name || undefined,
+      city: payer.city || undefined,
+      amount: payer.amount || 0,
     },
   });
   const [isPending, startTransition] = useTransition();
-  const submitHandler = (values: z.infer<typeof EditUserSchema>) => {
+  const submitHandler = (values: z.infer<typeof EditPayerSchema>) => {
     startTransition(() => {
-      const id: string = user.id;
-      edituser(values, id)
+      const id: string = payer.id;
+      editPayer(values, id)
         .then(data => {
-          if (data.error) {
-            setError(data.error);
+          if (data?.error) {
+            toast.error(data.error);
           }
-          if (data.success) {
-            setSuccess(data.success);
+          if (data?.success) {
+            toast.success(data.success);
+            onEditPayerOpenChanges(false);
           }
         })
-        .catch(() => setError("Something went wrong!"));
+        .catch(() => toast.error("Something went wrong!"));
     });
   };
   return (
-    <Dialog open={isOpen} onOpenChange={onEditUserOpenChanges}>
-      <DialogContent>
+    <Dialog open={isOpen} onOpenChange={onEditPayerOpenChanges}>
+      <DialogContent
+        onInteractOutside={e => {
+          e.preventDefault();
+        }}
+      >
         <Form {...form}>
           <form className="space-y-6" onSubmit={form.handleSubmit(submitHandler)}>
-            <DialogHeader className="font-bold">Edit User</DialogHeader>
+            <DialogHeader className="font-bold">Edit Payer </DialogHeader>
 
             <div className="space-y-4">
               <FormField
@@ -64,7 +63,7 @@ export default function EditPayerDialogue({ user, isOpen, onEditUserOpenChanges 
                   <FormItem>
                     <FormLabel showError={false}>Name</FormLabel>
                     <FormControl>
-                      <Input {...field} type="text" placeholder="John Doe" disabled={isPending} />
+                      <Input {...field} type="text" placeholder="Ranjan" disabled={isPending} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -72,12 +71,12 @@ export default function EditPayerDialogue({ user, isOpen, onEditUserOpenChanges 
               />
               <FormField
                 control={form.control}
-                name="email"
+                name="city"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel showError={false}>Email</FormLabel>
+                    <FormLabel showError={false}>Place</FormLabel>
                     <FormControl>
-                      <Input {...field} type="email" placeholder="Johndoe@gmail.com" disabled={isPending} />
+                      <Input {...field} type="text" placeholder="Kannikapuri" disabled={isPending} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -85,41 +84,33 @@ export default function EditPayerDialogue({ user, isOpen, onEditUserOpenChanges 
               />
               <FormField
                 control={form.control}
-                name="password"
+                name="amount"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel showError={false}>Password</FormLabel>
+                    <FormLabel showError={false}>Amount</FormLabel>
                     <FormControl>
-                      <Input {...field} type="password" placeholder="********" disabled={isPending} />
+                      <Input
+                        {...field}
+                        type="number"
+                        onBlur={e => {
+                          if (!e.target.value) {
+                            field.onChange(0);
+                          }
+                        }}
+                        onChange={field.onChange}
+                        placeholder="Enter amount"
+                        disabled={isPending}
+                      />
                     </FormControl>
                     <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="isTwoFactorEnabled"
-                render={({ field }) => (
-                  <FormItem>
-                    <div className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
-                      <div className="spece-y-0.5">
-                        <FormLabel showError={false}>Two Factor Authentication</FormLabel>
-                        <FormDescription>Enable two factor authentication for your account</FormDescription>
-                      </div>
-                      <FormControl>
-                        <Switch disabled={isPending} checked={field.value} onCheckedChange={field.onChange} />
-                      </FormControl>
-                    </div>
                   </FormItem>
                 )}
               />
             </div>
-            <FormSuccess message={success} />
-            <FormError message={error} />
-
             <DialogFooter>
-              <Button type="submit">Update</Button>
+              <Button type="submit" disabled={isPending}>
+                Update
+              </Button>
             </DialogFooter>
           </form>
         </Form>
