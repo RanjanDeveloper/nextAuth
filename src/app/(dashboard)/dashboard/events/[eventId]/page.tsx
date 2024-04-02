@@ -9,6 +9,8 @@ type Props = {
     eventId: string;
   };
 };
+import { revalidatePath } from "next/cache";
+
 export default async function EventDetailsPage({ params }: Props) {
   const payers: any = await getCurrentEvent(params.eventId);
 

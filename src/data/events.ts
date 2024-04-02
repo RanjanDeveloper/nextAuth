@@ -12,6 +12,7 @@ export const getEventsById = async (id:string) => {
       const events = await db.query.events.findMany({
         where:(events,{eq})=> eq(events.userId,id)
       });
+     
       return events;
     } catch {
       return null

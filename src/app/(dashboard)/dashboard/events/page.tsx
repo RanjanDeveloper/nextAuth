@@ -7,9 +7,12 @@ import Link from "next/link";
 import EventsList from "./events-list";
 
 
-type Props = {};
 
+type Props = {};
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
 export default function EventsPage({}: Props) {
+ 
   return (
     <div className="space-y-5  ">
     <EventsList />

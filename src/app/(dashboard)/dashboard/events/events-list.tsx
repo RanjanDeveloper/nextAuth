@@ -3,12 +3,12 @@ import { getEventsById } from "@/data/events";
 import { currentUser } from "@/lib/auth";
 
 import Link from "next/link";
-import { revalidatePath } from "next/cache";
+
 type Props = {};
 
-const dynamic = 'force-dynamic'
+
 export default async function EventsList({}: Props) {
-  
+
   const user = await currentUser();
   const events = await getEventsById(user?.id!);
   return (

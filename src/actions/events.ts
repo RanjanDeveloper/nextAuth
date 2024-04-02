@@ -5,6 +5,7 @@ import { insertEvent } from "@/data/events";
 import * as z from "zod";
 import { db } from "@/lib/db";
 import { getPayersByEventId } from "@/data/payers";
+import { revalidatePath } from "next/cache";
 
 export const addEvent = async (values: z.infer<typeof AddEventsSchema>) => {
   const user = await currentUser();
@@ -15,8 +16,9 @@ export const addEvent = async (values: z.infer<typeof AddEventsSchema>) => {
   const { title: name, description, eventType, date, place } = validateFields.data;
   const addedEvent = await insertEvent(user?.id!, name, eventType!, date!, place!);
   if (!addedEvent) {
-    return { success: "Something went wrong!" };
+    return { error: "Something went wrong!" };
   }
+  revalidatePath('/dashboard/events');
   return { success: "Event added Successfully!" };
 };
 
