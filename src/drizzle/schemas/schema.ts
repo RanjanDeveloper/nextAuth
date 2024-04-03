@@ -238,9 +238,18 @@ export const userRelations = relations(user, ({ one, many }) => ({
   events: many(events),
 }));
 
-export const eventsRelations = relations(events, ({ one }) => ({
+export const eventsRelations = relations(events, ({ one,many }) => ({
   users: one(user, {
     fields: [events.userId],
     references: [user.id],
   }),
+  payers:many(payers)
+}));
+
+export const payersRelations = relations(payers, ({ one }) => ({
+  accounts: one(events, {
+    fields: [payers.eventId],
+    references: [events.id],
+  }),
+ 
 }));

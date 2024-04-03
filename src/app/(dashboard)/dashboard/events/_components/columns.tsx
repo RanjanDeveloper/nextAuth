@@ -7,12 +7,16 @@ import { EventsEnum } from "@/drizzle/schemas/schema";
 import { format } from "date-fns";
 import Link from "next/link";
 
+
 export type Events = {
   id: string;
   title: string;
   eventType: EventsEnum;
   dateTime: Date;
   location: string;
+  payersCount:number;
+  amount:number;
+
 };
 
 export const columns: ColumnDef<Events>[] = [
@@ -51,6 +55,24 @@ export const columns: ColumnDef<Events>[] = [
     header: ({ column }) => {
       return <DataTableColumnHeader column={column} title="Location" />;
     },
+  },
+  {
+    id:"amount",
+    header: ({ column }) => {
+      return <DataTableColumnHeader column={column} title="Amount" />;
+    },
+    cell:({row}) => {
+      return row.original.amount;
+    }
+  },
+  {
+    id:"payers",
+    header: ({ column }) => {
+      return <DataTableColumnHeader column={column} title="Payers" />;
+    },
+    cell:({row}) => {
+      return row.original.payersCount;
+    }
   },
   {
     id: "actions",

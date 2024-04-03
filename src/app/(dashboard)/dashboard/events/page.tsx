@@ -11,10 +11,10 @@ import AddEvent from "./_components/add-event";
 type Props = {};
 
 export default async function EventsPage({}: Props) {
+  
  const events:any = await getCurrentUserEvents();
+ 
   return (
-    
-    <>
     <div className="space-y-3">
         <div className="flex justify-end">
         <AddEvent />
@@ -22,6 +22,5 @@ export default async function EventsPage({}: Props) {
 
         <DataTable columns={columns} data={events ?? []} />
       </div>
-  </>
   );
 }

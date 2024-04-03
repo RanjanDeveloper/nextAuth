@@ -1,34 +1,41 @@
-'use server';
+"use server";
 import { EventsEnum, events } from "@/drizzle/schemas/schema";
 import { db } from "@/lib/db";
-import {v4 as uuid} from 'uuid'
-import { currentUser } from '@/lib/auth';
+import { v4 as uuid } from "uuid";
+import { currentUser } from "@/lib/auth";
 export const getCurrentUserEvents = async () => {
-    try{
-      const user = await currentUser()!;
-      const events = await db.query.events.findMany({
-        where:(events,{eq})=> eq(events.userId,user?.id as string)
-      });
-     
-      return events;
-    } catch {
-      return null
-    }
-  };
-export const insertEvent =  async(id:string,name:string,eventType:EventsEnum,date:Date,place:string)=> {
-  try{
+  try {
+    const user = await currentUser()!;
+    const events = await db.query.events.findMany({
+      where: (events, { eq }) => eq(events.userId, user?.id as string),
+      with: {
+        payers: true,
+      },
+    });
+    // Calculate the length of the payers array for each event and totalAmount payers paid
+    const updatedEvents = events.map(({ payers, ...event }) => ({
+      ...event,
+      payersCount: payers.length,
+      amount: payers.reduce((total, payer) => total + payer.amount, 0),
+    }));
+    return updatedEvents;
+  } catch {
+    return null;
+  }
+};
+export const insertEvent = async (id: string, name: string, eventType: EventsEnum, date: Date, place: string) => {
+  try {
     const newEvent = {
-      id:uuid(),
-      userId:id,
-      title:name,
+      id: uuid(),
+      userId: id,
+      title: name,
       eventType,
-      dateTime:new Date(),
-      location:place
-
-    }
-    const event = await db.insert(events).values(newEvent).returning()
+      dateTime: new Date(),
+      location: place,
+    };
+    const event = await db.insert(events).values(newEvent).returning();
     return event;
   } catch {
-    return null
+    return null;
   }
-}
+};
