@@ -7,27 +7,29 @@ import { EventsEnum } from "@/drizzle/schemas/schema";
 import { format } from "date-fns";
 import Link from "next/link";
 
-
-export type Events = {
+export type Event = {
   id: string;
   title: string;
   eventType: EventsEnum;
   dateTime: Date;
   location: string;
+
+};
+export type Events = {
+  eventsData:Event;
   payersCount:number;
   amount:number;
-
 };
 
 export const columns: ColumnDef<Events>[] = [
   {
-    accessorKey: "title",
+    accessorKey: "eventsData.title",
     header: ({ column }) => {
       return <DataTableColumnHeader column={column} title="Title" />;
     },
     cell: ({ row }) => {
-      const eventId = row.original.id;
-      const eventTitle: any = row.getValue("title");
+      const eventId = row.original.eventsData.id;
+      const eventTitle: any = row.original.eventsData.title;
       return (
         <Link  href={`/dashboard/events/${eventId}`}>
         <span className="text-blue-500">{eventTitle}</span>
@@ -36,22 +38,24 @@ export const columns: ColumnDef<Events>[] = [
     },
   },
   {
-    accessorKey: "eventType",
+    
+    accessorKey: "eventsData.eventType",
     header: ({ column }) => {
       return <DataTableColumnHeader column={column} title="Event" />;
     },
   },
   {
-    accessorKey: "dateTime",
+    accessorKey: "eventsData.dateTime",
     header: ({ column }) => {
       return <DataTableColumnHeader column={column} title="Date" />;
     },
     cell: ({ row }) => {
-      return format(row.getValue("dateTime"), "PPP");
+      
+      return format(row.original.eventsData.dateTime, "PPP");
     },
   },
   {
-    accessorKey: "location",
+    accessorKey: "eventsData.location",
     header: ({ column }) => {
       return <DataTableColumnHeader column={column} title="Location" />;
     },
@@ -62,8 +66,8 @@ export const columns: ColumnDef<Events>[] = [
       return <DataTableColumnHeader column={column} title="Amount" />;
     },
     cell:({row}) => {
-      return row.original.amount;
-    }
+      return row.original.amount ?? 0;
+    },
   },
   {
     id:"payers",
@@ -72,7 +76,8 @@ export const columns: ColumnDef<Events>[] = [
     },
     cell:({row}) => {
       return row.original.payersCount;
-    }
+    },
+    
   },
   {
     id: "actions",

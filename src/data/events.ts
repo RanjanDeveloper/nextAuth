@@ -1,24 +1,23 @@
 "use server";
-import { EventsEnum, events } from "@/drizzle/schemas/schema";
+import { EventsEnum, events, payers } from "@/drizzle/schemas/schema";
 import { db } from "@/lib/db";
 import { v4 as uuid } from "uuid";
 import { currentUser } from "@/lib/auth";
+import { eq, sql } from "drizzle-orm";
 export const getCurrentUserEvents = async () => {
   try {
     const user = await currentUser()!;
-    const events = await db.query.events.findMany({
-      where: (events, { eq }) => eq(events.userId, user?.id as string),
-      with: {
-        payers: true,
-      },
-    });
-    // Calculate the length of the payers array for each event and totalAmount payers paid
-    const updatedEvents = events.map(({ payers, ...event }) => ({
-      ...event,
-      payersCount: payers.length,
-      amount: payers.reduce((total, payer) => total + payer.amount, 0),
-    }));
-    return updatedEvents;
+    const eventsData = await db
+    .select({
+      eventsData:events,
+      payersCount: sql<number>`count(${payers.id})`.mapWith(Number),
+      amount: sql<number>`sum(${payers.amount})`.mapWith(Number),
+    })
+    .from(events)
+    .where(eq(events?.userId,user?.id as string))
+    .leftJoin(payers, eq(payers.eventId, events.id))
+    .groupBy(sql`${events.id}`);
+    return eventsData;
   } catch {
     return null;
   }

@@ -33,17 +33,17 @@ export default function EditEventDialogue({isOpen,onEditEventOpenChanges,event}:
   const form = useForm<z.infer<typeof EditEventSchema>>({
     resolver: zodResolver(EditEventSchema),
     defaultValues: {
-      title:  event.title,
-      eventType: event.eventType,
-      date: event.dateTime,
-      place:event.location,
+      title:  event.eventsData.title,
+      eventType: event.eventsData.eventType,
+      date: event.eventsData.dateTime,
+      place:event.eventsData.location,
     },
   });
 
   const submitHandler = (values: z.infer<typeof EditEventSchema>) => {
     startTransition(() => {
      
-    editEvent(values,event.id)
+    editEvent(values,event.eventsData.id)
         .then(data => {
           if (data?.error) {
             toast.error(data.error);

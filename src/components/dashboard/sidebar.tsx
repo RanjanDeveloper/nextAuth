@@ -1,12 +1,10 @@
 'use client';
 import { useCurrentRole } from "@/app/hooks/use-current-role";
-import { UserRoleEnum } from "@/drizzle/schemas/schema";
 import { cn } from "@/lib/utils";
-import { CalendarCheck,User,Settings } from "lucide-react";
+import { CalendarCheck,User,Settings, HandCoins } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React, { Fragment } from "react";
-import { FiSettings,FiCloud ,FiUser} from "react-icons/fi";
+import React from "react";
 import { v4 as uuid } from "uuid";
 type Props = {};
 interface MenuItem {
@@ -20,16 +18,16 @@ export default function Sidebar({}: Props) {
   const pathname = usePathname();
   const menuList: MenuItem[] = [
     {
-      name: "Settings",
-      icon: <Settings className="size-4" />,
-      path: "/dashboard/settings",
-      allowedRoles: ["ADMIN","USER"]
-    },
-    {
         name: "Users",
         icon: <User className="size-4" />,
         path: "/dashboard/users",
         allowedRoles: ["ADMIN"]
+      },
+      {
+        name: "Settings",
+        icon: <Settings className="size-4" />,
+        path: "/dashboard/settings",
+        allowedRoles: ["ADMIN","USER"]
       },
       {
         name: "Events",
@@ -37,6 +35,13 @@ export default function Sidebar({}: Props) {
         path: "/dashboard/events",
         allowedRoles: ["ADMIN","USER"]
       },
+      {
+        name: "Payers",
+        icon: <HandCoins className="size-4" />,
+        path: "/dashboard/payers",
+        allowedRoles: ["ADMIN","USER"]
+      },
+      
   ];
   return (
     <div className="lg:w-[300px] lg:sticky bg-white border-r py-4">

@@ -16,7 +16,7 @@ export default function DeletePayerDialogue({ isOpen, onDeleteEventOpenChanges, 
   const [isPending, startTransition] = useTransition();
   const handlePayerDelete = () => {
     startTransition(() => {
-      const id: string = event.id;
+      const id: string = event.eventsData.id;
       deleteEvent(id)
         .then(data => {
           if (data?.error) {
