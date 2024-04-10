@@ -57,7 +57,6 @@ export const getPayersByEventId = async (eventId:string) => {
         amount:sum(payersData.amount),
         location:sql<string>`lower(${payersData.location})`,
         events: sql<string>`array_agg(${payersData.title})`.as('events'),
-       eventIds:  sql<string>`array_agg(ROW(${payersData.title}, ${payersData.eventId})`.as('events'),
       }).from(payersData).groupBy(sql`lower(${payersData.name})`,sql`lower(${payersData.location})`).where(eq(payersData.userId,user?.id as string));
  
       console.log(result);
