@@ -223,6 +223,7 @@ export const payers = pgTable("payers", {
     .references(() => events.id, { onDelete: "cascade" }),
   name:text("name").notNull(),
   city:text("city"),
+  description:text("description"),
   amount:integer("amount").notNull(),
   timestamp:timestamp('timestamp', { mode: "date" }).defaultNow()
 });

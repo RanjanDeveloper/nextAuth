@@ -1,3 +1,4 @@
+
 'use server';
 import { AddEventSchema } from '@/schemas';
 import { EventsEnum, events, payers } from "@/drizzle/schemas/schema";
@@ -5,7 +6,7 @@ import { db } from "@/lib/db";
 import { z } from 'zod';
 import {v4 as uuid} from 'uuid'
 import { currentUser } from '@/lib/auth';
-import { sql,eq,sum,and} from 'drizzle-orm';
+import { sql,eq,sum,and, like, ilike} from 'drizzle-orm';
 export const getPayersByEventId = async (eventId:string) => {
     try{
       const payers = await db.query.payers.findMany({
@@ -17,7 +18,7 @@ export const getPayersByEventId = async (eventId:string) => {
     }
   };
 
-  export const insertPayer = async (name:string,amount:number,eventId:string,city?: string) => {
+  export const insertPayer = async (name:string,amount:number,eventId:string,city?: string,description?:string) => {
     try {
       // 1. Hash the password securely
     
@@ -29,6 +30,7 @@ export const getPayersByEventId = async (eventId:string) => {
         name,
         eventId,
         city,
+        description,
         amount
       };
   
@@ -76,17 +78,31 @@ console.log(name,city);
       city:sql<string>`lower(${payers.city})`.as('city'),
       eventId:payers.eventId,
       title:events.title,
-      amount:sum(payers.amount).as('amount')
+      amount:sum(payers.amount).as('amount'),
+      eventType:events.eventType
     }).from(payers).leftJoin(events,eq(events.id,payers.eventId))
     .where(and(eq(sql`lower(${payers.name})`,name),eq(sql`lower(${payers.city})`,city)))
-    .groupBy(sql`lower(${payers.name})`,sql`lower(${payers.city})`,payers.eventId,events.title).as('payersData');
+    .groupBy(sql`lower(${payers.name})`,sql`lower(${payers.city})`,payers.eventId,events.title,events.eventType).as('payersData');
 
     const result = await db.select({
       name:sql<string>`lower(${payersData.name})`,
       city:sql<string>`lower(${payersData.city})`,
       totalAmount:sum(payersData.amount),
-      events: sql<string>`json_agg(json_build_object('title', ${payersData.title}, 'amount', ${payersData.amount}))`.as('events')
+      events: sql<string>`json_agg(json_build_object('title', ${payersData.title}, 'amount', ${payersData.amount},'eventType',${payersData.eventType}))`.as('events')
     }).from(payersData).groupBy(sql`lower(${payersData.name})`,sql`lower(${payersData.city})`)
+    console.log({result})
+    return result;
+  }
+  export const getPayerDetailsByName = async(name:string)=> {
+    const result = await db
+    .select({
+      name:sql<string>`lower(${payers.name})`.as('name'),
+      city:sql<string>`lower(${payers.city})`.as('city')
+    }).from(payers)
+    .where(ilike(payers.name,`${name}%`))
+    .groupBy(sql`lower(${payers.name})`,sql`lower(${payers.city})`);
+
+
     console.log({result})
     return result;
   }

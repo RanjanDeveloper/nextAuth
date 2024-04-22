@@ -33,8 +33,8 @@ export const AddUserSchema = z.object({
 export const AddPayerSchema = z.object({
   name: z.string().min(1, { message: "Name is required" }),
   city: z.optional(z.string().min(1, { message: "City is required" })),
-  amount:z.coerce.number().nonnegative({ message: "Amount must be at least 0" }).default(0)
- 
+  amount:z.coerce.number().nonnegative({ message: "Amount must be at least 0" }).default(0),
+  description:z.optional(z.string().min(1, { message: "description is required" }))
 });
 export const EditPayerSchema = z.object({
   name:z.optional( z.string().min(1, { message: "Name is required" })),

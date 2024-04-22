@@ -12,9 +12,10 @@ import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { edituser } from "@/actions/admin";
+import { Users } from "./columns";
 
 type Props = {
-  user: any;
+  user: Users;
   isOpen: boolean;
   onEditUserOpenChanges: any;
 };
