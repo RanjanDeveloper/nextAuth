@@ -13,15 +13,13 @@ import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { adduser } from "@/actions/admin";
+import { toast } from "sonner";
 type Props = {
-  isOpen:boolean,
-  onAddUserOpenChanges:any;
+  isOpen: boolean;
+  onAddUserOpenChanges: any;
 };
 
-export default function AddUserDialogue({isOpen,onAddUserOpenChanges}: Props) {
-  const user = useCurrentUser();
-  const [success, setSuccess] = useState<string | undefined>();
-  const [error, setError] = useState<string | undefined>();
+export default function AddUserDialogue({ isOpen, onAddUserOpenChanges }: Props) {
 
   const form = useForm<z.infer<typeof AddUserSchema>>({
     resolver: zodResolver(AddUserSchema),
@@ -38,20 +36,21 @@ export default function AddUserDialogue({isOpen,onAddUserOpenChanges}: Props) {
       adduser(values)
         .then(data => {
           if (data.error) {
-            setError(data.error);
+            toast.error(data.error);
           }
           if (data.success) {
-            setSuccess(data.success);
+            toast.success(data.success);
+            onAddUserOpenChanges(false);
           }
         })
-        .catch(() => setError("Something went wrong!"));
+        .catch(() => toast.error("Something went wrong!"));
     });
   };
   return (
     <Dialog open={isOpen} onOpenChange={onAddUserOpenChanges}>
-          <DialogContent>
-          <Form {...form}>
-        <form className="space-y-6" onSubmit={form.handleSubmit(submitHandler)}>
+      <DialogContent>
+        <Form {...form}>
+          <form className="space-y-6" onSubmit={form.handleSubmit(submitHandler)}>
             <DialogHeader className="font-bold">Add User</DialogHeader>
 
             <div className="space-y-4">
@@ -113,16 +112,12 @@ export default function AddUserDialogue({isOpen,onAddUserOpenChanges}: Props) {
                 )}
               />
             </div>
-            <FormSuccess message={success} />
-            <FormError message={error} />
-
             <DialogFooter>
-              <Button type="submit">Add</Button>
+              <Button disabled={isPending} type="submit">Add</Button>
             </DialogFooter>
-            </form>
-      </Form>
-          </DialogContent>
- 
+          </form>
+        </Form>
+      </DialogContent>
     </Dialog>
   );
 }

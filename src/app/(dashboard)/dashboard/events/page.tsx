@@ -3,7 +3,7 @@ import React from "react";
 
 import { getCurrentUserEvents } from "@/data/events";
 import { DataTable } from "./_components/data-table";
-import { Events, columns } from "./_components/columns";
+import {  columns } from "./_components/columns";
 import AddEvent from "./_components/add-event";
 
 
