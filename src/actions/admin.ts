@@ -2,11 +2,13 @@
 import bcrypt from "bcryptjs";
 import { addUser, editUser, getUserByEmail, getUserById } from "@/data/users";
 
-import { UserRoleEnum } from "@/drizzle/schemas/schema";
+import { UserRoleEnum, user } from "@/drizzle/schemas/schema";
 import { currentRole } from "@/lib/auth";
 import { AddUserSchema, EditUserSchema } from "@/schemas";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
+import { eq } from "drizzle-orm";
+import { db } from "@/lib/db";
 
 export const admin = async () => {
   const role = await currentRole();
@@ -33,9 +35,17 @@ export const adduser = async (values: z.infer<typeof AddUserSchema>) => {
   if (!addedUser) {
     return { success: "Something went wrong!" };
   }
+  revalidatePath('/dashboard/users')
   return { success: "User added Successfully!" };
 };
-
+export const deleteUser = async (id: string) => {
+  const deletedUser = await db.delete(user).where(eq(user.id, id));
+  if (!deletedUser) {
+    return { error: "Something went wrong!" };
+  }
+  revalidatePath('/dashboard/users')
+  return {success:"Deleted successfully!"}
+};
 export const edituser = async (values: z.infer<typeof EditUserSchema>, id: string) => {
   const validateFields = EditUserSchema.safeParse(values);
 

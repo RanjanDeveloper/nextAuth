@@ -28,7 +28,7 @@ export const columns: ColumnDef<Payers>[] = [
       const city = row.original.location;
       return (
         <Link  href={{
-          pathname: `/dashboard/payers/${payerId}`,
+          pathname: `/dashboard/payers/payerDetails`,
           query: { name,city},
         }} >
         <span className="text-blue-500">{name}</span>

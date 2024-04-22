@@ -14,8 +14,8 @@ export const addPayer = async (values: z.infer<typeof AddPayerSchema>, eventId: 
   if (!validateFields.success) {
     return { error: "Invalid Fields!" };
   }
-  const { name, city, amount } = validateFields.data;
-  const addedEvent = await insertPayer(name, amount, eventId, city);
+  const { name, city, amount,description } = validateFields.data;
+  const addedEvent = await insertPayer(name, amount, eventId, city,description);
   if (!addedEvent) {
     return { success: "Something went wrong!" };
   }
