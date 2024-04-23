@@ -23,7 +23,6 @@ export const columns: ColumnDef<Payers>[] = [
     },
     cell: ({ row }) => {
       debugger;
-      const payerId = row.original.id;
       const name: any = row.original.name;
       const city = row.original.location;
       return (
