@@ -1,11 +1,12 @@
 "use client";
-
+import { Badge } from "@/components/ui/badge"
 import { ColumnDef } from "@tanstack/react-table";
 import MoreActions from "./more-actions";
 import DataTableColumnHeader from "./data-table-column-header";
 import { EventsEnum } from "@/drizzle/schemas/schema";
 import { format } from "date-fns";
 import Link from "next/link";
+import { formatCurrency, getEventTypeVariant } from "@/lib/utils";
 
 export type Event = {
   id: string;
@@ -44,6 +45,10 @@ export const columns: ColumnDef<Events>[] = [
     header: ({ column }) => {
       return <DataTableColumnHeader column={column} title="Event" />;
     },
+    cell: ({ row }) => {
+      const eventType = row.original.eventsData.eventType;
+      return <Badge variant={getEventTypeVariant(eventType)}>{eventType.charAt(0).toUpperCase() + eventType.slice(1).toLowerCase()}</Badge>;
+    },
   },
   {
     id: "dateTime",
@@ -68,7 +73,7 @@ export const columns: ColumnDef<Events>[] = [
       return <DataTableColumnHeader column={column} title="Amount" />;
     },
     cell: ({ row }) => {
-      return row.original.amount ?? 0;
+      return formatCurrency(row.original.amount ?? 0,'INR');
     },
     accessorFn: d => Number(d.amount)
   },

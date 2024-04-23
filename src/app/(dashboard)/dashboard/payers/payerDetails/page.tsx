@@ -6,6 +6,9 @@ import FormError from "@/components/form-error";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableRow, TableHeader } from "@/components/ui/table";
 import Loading from "./loading";
 import { EventsEnum } from "@/drizzle/schemas/schema";
+import { Badge } from "@/components/ui/badge";
+import { formatCurrency, getEventTypeVariant } from "@/lib/utils";
+
 type Props = {
   params: {
     payerId: string;
@@ -76,7 +79,7 @@ export default function PayerDetailsPage({ params }: Props) {
           </div>
           <div className="flex space-x-4 text-md">
             <span>Total Amount</span>
-            <span className="font-semibold">{details?.totalAmount ?? 'N/A'}</span>
+            <span className="font-semibold">{formatCurrency(details?.totalAmount,'INR') ?? 'N/A'}</span>
           </div>
         </div>
         <div className="mt-10">
@@ -90,24 +93,30 @@ export default function PayerDetailsPage({ params }: Props) {
                 <TableRow>
                   <TableHead>Title</TableHead>
                   <TableHead>Event</TableHead>
-                  <TableHead className="text-right">Amount</TableHead>
+                  <TableHead >Amount</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {details?.events?.length > 0 && (
+                  
                     details.events.map((event:any, index:any) => (
+
                         <TableRow key={`${event.title}_${index}`}>
                           <TableCell>{event.title}</TableCell>
-                          <TableCell>{event.eventType}</TableCell>
-                          <TableCell className="text-right">
-                            {event.amount || "N/A"}
+                          <TableCell >
+                            <Badge variant={getEventTypeVariant(event.eventType)}>
+                            {event.eventType.charAt(0).toUpperCase() + event.eventType.slice(1).toLowerCase()}
+                            </Badge>                            
+                            </TableCell>
+                          <TableCell>
+                            {formatCurrency(event.amount, "INR") || "N/A"}
                           </TableCell>
                         </TableRow>
                       ))
                 )}
                 {!details?.events?.length && (
                 <TableRow>
-                  <TableCell colSpan={2} className="text-center text-gray-400">
+                  <TableCell colSpan={3} className="text-center text-gray-400">
                     No events found for this payer.
                   </TableCell>
                 </TableRow>

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useTransition,useRef,useCallback } from "react";
+import React, { useState, useTransition, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader } from "@/components/ui/dialog";
 import { FormField, Form, FormItem, FormControl, FormMessage, FormLabel } from "@/components/ui/form";
@@ -11,10 +11,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { addPayer } from "@/actions/payers";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
-// import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { getPayerDetailsByName } from "@/data/payers";
-import { useClickAway,useDebounce } from 'react-use';
+import { getAllPayersCities } from "@/data/payers";
+import { useClickAway, useDebounce } from "react-use";
 import { Textarea } from "@/components/ui/textarea";
+import { useSuggestions } from "@/app/hooks/use-suggestions";
+import SuggestionList from "./suggestion-list";
+
 type Props = {
   isOpen: boolean;
   eventId: string;
@@ -22,52 +25,62 @@ type Props = {
 };
 
 export default function AddPayerDialogue({ isOpen, onAddUserOpenChanges, eventId }: Props) {
-  const filterRef = useRef(null);
-  const [query, setQuery] = useState("");
-  const [suggestions, setSuggestions] = useState<any>([]);
-  const [isSelectionOpen, setIsSelectionOpen] = useState(false); // Track selection visibility
-  const [isLoading, setIsLoading] = useState(false); // Track fetching state
-  const [debouncedValue, setDebouncedValue] = React.useState('');
-  const [, cancel] = useDebounce(
-    () => {
-      setDebouncedValue(query);
-    },
-    300,
-    [query]
-  );
-// Combine debouncing and fetching logic using useCallback
-const fetchSuggestions = useCallback(async () => {
-  try {
-    if (!debouncedValue) {
-      setSuggestions([]);
-      setIsLoading(false);
-      return;
-    }
-
-    setIsLoading(true);
-    const response = await getPayerDetailsByName(debouncedValue);
-    setSuggestions(response);
-  } catch (error) {
-    console.error("Error fetching suggestions:", error);
-  } finally {
-    setIsLoading(false);
-  }
-}, [debouncedValue, getPayerDetailsByName]);
-useEffect(() => {
-  fetchSuggestions();
-}, [fetchSuggestions, debouncedValue]); // Only refetch when query changes
+  const { 
+    query: nameQuery, 
+    setQuery: setNameQuery, 
+    suggestions: nameSuggestions,
+    isLoading: nameSugIsLoading, 
+    setIsLoading: setNameSugIsLoading 
+  } = useSuggestions("", getPayerDetailsByName as any);
+  const {
+     query: cityQuery, 
+     setQuery: setCityQuery, 
+     suggestions: citySuggestions, 
+     isLoading: citySugIsLoading, 
+     setIsLoading: setCitySugIsLoading 
+    } = useSuggestions("", getAllPayersCities as any);
+  const [isNameSelectionOpen, setIsNameSelectionOpen] = useState(false);
+  const [isCitySelectionOpen, setIsCitySelectionOpen] = useState(false);
+  const nameFilterRef = useRef(null);
+  const cityFilterRef = useRef(null);
   const [isPending, startTransition] = useTransition();
+
   const form = useForm<z.infer<typeof AddPayerSchema>>({
     resolver: zodResolver(AddPayerSchema),
     defaultValues: {
       name: "",
       city: undefined,
-      description:undefined,
+      description: undefined,
       amount: 0,
-     
     },
   });
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>, field: any) => {
+    field.onChange(e.target.value);
+    setNameQuery(e.target.value);
+    setIsNameSelectionOpen(!!e.target.value);
+    setNameSugIsLoading(!!e.target.value);
+  };
 
+  const handleCityChange = (e: React.ChangeEvent<HTMLInputElement>, field: any) => {
+    field.onChange(e.target.value);
+    setCityQuery(e.target.value);
+    setIsCitySelectionOpen(!!e.target.value);
+    setCitySugIsLoading(!!e.target.value);
+  };
+
+  useClickAway(nameFilterRef, () => setIsNameSelectionOpen(false));
+  useClickAway(cityFilterRef, () => setIsCitySelectionOpen(false));
+
+  const handleSuggestClick = (suggestion: any) => {
+    form.setValue("name", suggestion.name);
+    form.setValue("city", suggestion.city ?? "");
+    setIsNameSelectionOpen(false);
+  };
+
+  const handleCitySuggestClick = (suggestion: any) => {
+    form.setValue("city", suggestion.city ?? "");
+    setIsCitySelectionOpen(false);
+  };
   const submitHandler = (values: z.infer<typeof AddPayerSchema>) => {
     startTransition(() => {
       addPayer(values, eventId as string)
@@ -83,28 +96,6 @@ useEffect(() => {
         .catch(() => toast.error("Something went wrong!"));
     });
   };
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>,field:any) => {
-    field.onChange(e.target.value);
-    setQuery(e.target.value);
-    if(e.target.value === ''){
-      setIsSelectionOpen(false); // Open suggestions on input change
-      setIsLoading(false); // Start loading indicator
-      setSuggestions([]);
-    }
-    else{
-      setIsSelectionOpen(true); // Open suggestions on input change
-      setIsLoading(true); // Start loading indicator
-    }
-    
-  };
-  useClickAway(filterRef, () => {
-    setIsSelectionOpen(false); // Open suggestions on input change
-  });
-const handleSuggestClick = (suggestion:any)=> {
-  form.setValue('name', suggestion.name);
-  form.setValue('city', suggestion.city);
-  setIsSelectionOpen(false); // Close suggestions on selection
-}
   return (
     <Dialog open={isOpen} onOpenChange={onAddUserOpenChanges} modal>
       <DialogContent
@@ -112,7 +103,7 @@ const handleSuggestClick = (suggestion:any)=> {
           e.preventDefault();
         }}
       >
-        <Form {...form} >
+        <Form {...form}>
           <form autoComplete="off" className="space-y-6" onSubmit={form.handleSubmit(submitHandler)}>
             <DialogHeader className="font-bold">Add Payer</DialogHeader>
             <div className="space-y-4">
@@ -122,41 +113,20 @@ const handleSuggestClick = (suggestion:any)=> {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel showError={false}>Name</FormLabel>
-                    <FormControl >
-                      <div ref={filterRef} className="relative">
-                      <Input 
-                        {...field}
-                        type="text" 
-                        onChange={(e)=>handleInputChange(e,field)}
-                        placeholder="Ranjan"
-                        disabled={isPending}
-                      />
-                      {isSelectionOpen && (
-                        <ul className="bg-white divide-y border max-h-32 rounded-md overflow-y-auto w-full left-0 top-[calc(100%+2px)] shadow p-2 text-sm absolute">
-                          {isLoading ? (
-                            <li className="text-center">Loading...</li>
-                          ) : (
-                            suggestions.length === 0 ? (
-                              <li className="text-center">No results found</li>
-                            ) : (
-                              suggestions.map((suggestion: any, index: any) => (
-                                <li
-                                  onClick={() => handleSuggestClick(suggestion)}
-                                  className="flex justify-between cursor-pointer"
-                                  key={index}
-                                >
-                                  <span>{suggestion.name}</span>
-                                  <span>{suggestion.city ?? 'N/A'}</span>
-                                </li>
-                              ))
-                            )
-                          )}
-                        </ul>
-                      )}
+                    <FormControl>
+                      <div ref={nameFilterRef} className="relative">
+                        <Input {...field} type="text" onChange={e => handleNameChange(e, field)} placeholder="Ranjan" disabled={isPending} />
+                        {isNameSelectionOpen && <SuggestionList suggestions={nameSuggestions} isLoading={nameSugIsLoading} isSelectionOpen={isNameSelectionOpen} handleSuggestClick={handleSuggestClick}
+                        renderSuggestion={(suggestion) => (
+                          <>
+                          <span>{suggestion.name}</span>
+                          <span>{suggestion.city ?? 'N/A'}</span>
+                          </>
+                        )}
+                         />}
                       </div>
-                    
                     </FormControl>
-                 
+
                     <FormMessage />
                   </FormItem>
                 )}
@@ -168,32 +138,33 @@ const handleSuggestClick = (suggestion:any)=> {
                   <FormItem>
                     <FormLabel showError={false}>Place(Optional)</FormLabel>
                     <FormControl>
-                      <Input {...field} type="text" placeholder="Kannikapuri" disabled={isPending} />
+                      <div ref={cityFilterRef} className="relative">
+                        <Input {...field} type="text" placeholder="Kannikapuri" onChange={e => handleCityChange(e, field)} disabled={isPending} />
+                        {isCitySelectionOpen && <SuggestionList suggestions={citySuggestions} isLoading={citySugIsLoading} isSelectionOpen={isCitySelectionOpen} handleSuggestClick={handleCitySuggestClick}
+                        renderSuggestion={(suggestion)=><span>{suggestion.city}</span>}
+                        />}
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-       
+
               <FormField
-          control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Details (optional)</FormLabel>
-              <FormControl>
-                <Textarea
-                  placeholder="Tell us a little bit about yourself"
-                  className="resize-none"
-                  {...field}
-                />
-              </FormControl>
-             
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-               <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Details (optional)</FormLabel>
+                    <FormControl>
+                      <Textarea placeholder="Tell us a little bit about yourself" className="resize-none" {...field} />
+                    </FormControl>
+
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
                 control={form.control}
                 name="amount"
                 render={({ field }) => (
