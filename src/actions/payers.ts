@@ -27,8 +27,8 @@ export const editPayer = async (values: z.infer<typeof EditPayerSchema>, id: str
   if (!validateFields.success) {
     return { error: "Invalid fields!" };
   }
-  const { name, city, amount } = validateFields.data;
-  const updatedPayer = await db.update(payers).set({ name, city, amount }).where(eq(payers.id, id));
+  const { name, city, amount, description } = validateFields.data;
+  const updatedPayer = await db.update(payers).set({ name, city, amount,description }).where(eq(payers.id, id));
   if (!updatedPayer) {
     return { error: "Something went wrong!" };
   }
