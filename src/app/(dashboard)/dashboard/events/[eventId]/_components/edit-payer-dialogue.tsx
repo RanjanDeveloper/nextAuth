@@ -11,6 +11,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { editPayer } from "@/actions/payers";
 import { toast } from "sonner";
 import { Payers } from "./columns";
+import { Textarea } from "@/components/ui/textarea";
 
 type Props = {
   payer: Payers;
@@ -25,6 +26,7 @@ export default function EditPayerDialogue({ payer, isOpen, onEditPayerOpenChange
       name: payer.name || undefined,
       city: payer.city || undefined,
       amount: payer.amount || 0,
+      description: payer.description || undefined
     },
   });
   const [isPending, startTransition] = useTransition();
@@ -78,6 +80,20 @@ export default function EditPayerDialogue({ payer, isOpen, onEditPayerOpenChange
                     <FormControl>
                       <Input {...field} type="text" placeholder="Kannikapuri" disabled={isPending} />
                     </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+               <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Details (optional)</FormLabel>
+                    <FormControl>
+                      <Textarea placeholder="Tell us a little bit about yourself" className="resize-none" {...field} />
+                    </FormControl>
+
                     <FormMessage />
                   </FormItem>
                 )}
