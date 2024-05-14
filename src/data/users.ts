@@ -59,7 +59,7 @@ export const getUserById = async(id:string)=>{
   }
 }
 
-export const addUser = async (name:string,email: string, password: string,role:UserRoleEnum,isTwoFactorEnabled?:boolean,emailVerified?:Date ) => {
+export const addUser = async (name:string,email: string, password: string,role?:UserRoleEnum,isTwoFactorEnabled?:boolean,emailVerified?:Date ) => {
   try {
     // 1. Hash the password securely
     const hashedPassword = await bcrypt.hash(password, 10); // Adjust salt rounds as needed
