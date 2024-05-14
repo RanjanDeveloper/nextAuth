@@ -18,7 +18,7 @@ import { editEvent } from "@/actions/events";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
-import { EventsEnum } from "@/drizzle/schemas/schema";
+import { EventsEnum } from "@/db/schemas";
 import { Events } from "./columns";
 type Props = {
   isOpen:boolean,

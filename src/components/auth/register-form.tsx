@@ -12,6 +12,7 @@ import Link from "next/link";
 import { z } from "zod";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
 
 type Props = {};
 
@@ -34,8 +35,12 @@ export default function RegisterForm({}: Props) {
     setSuccess("");
     startTransition(() => {
       signup(values).then(data => {
-        setError(data.error);
-        setSuccess(data.success);
+        if (data?.error) {
+          toast.error(data.error);
+        }
+        if (data?.success) {
+           toast.success(data.success);
+        }
       });
     });
   };

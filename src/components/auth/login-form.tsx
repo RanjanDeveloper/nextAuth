@@ -14,6 +14,7 @@ import { BsExclamationTriangle } from "react-icons/bs";
 import { z } from "zod";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
 
 
 type Props = {};
@@ -36,8 +37,6 @@ export default function LoginForm({}: Props) {
 
   // Function to handle form submission
   const submitHandler = (values: z.infer<typeof LoginSchema>) => {
-    setError("");
-    setSuccess("");
     startTransition(() => {
       login(values,callbackUrl)
         .then(data => {
@@ -45,19 +44,20 @@ export default function LoginForm({}: Props) {
             if(!showTwofactor){
                 form.reset();
             }
-            setError(data.error);
+            toast.error(data.error);
+           
           }
           if (data?.success) {
              if(!showTwofactor){
                 form.reset();
              }
-            setSuccess(data.success);
+             toast.success(data.success);
           }
           if (data?.twoFactor) {
             setShowTwoFactor(data.twoFactor);
           }
         })
-        .catch(() => setError("something went wrong !"));
+        .catch(() =>  toast.error("something went wrong !"));
     });
   };
 

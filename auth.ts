@@ -1,9 +1,9 @@
-import { UserRoleEnum, twoFactorConfirmation } from "@/drizzle/schemas/schema";
-import { db } from "@/lib/db";
+import { UserRoleEnum, twoFactorConfirmation } from "@/db/schemas";
+import { db } from "@/db";
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import NextAuth from "next-auth";
 import authConfig from "./auth.config";
-import { user as users } from "@/drizzle/schemas/schema";
+import { user as users } from "@/db/schemas";
 import { getUserById } from "@/data/users";
 import { getTwoFactorConfirmationByUserId } from "@/data/two-factor-confirmation";
 import { getAccountByUserId } from "@/data/account";

@@ -4,17 +4,20 @@ import { currentUser } from "@/lib/auth";
 import { AddEventSchema,EditEventSchema } from "@/schemas";
 import { insertEvent } from "@/data/events";
 import * as z from "zod";
-import { db } from "@/lib/db";
+import { db } from "@/db";
 import { getPayersByEventId } from "@/data/payers";
 import { revalidatePath } from "next/cache";
-import { events } from "@/drizzle/schemas/schema";
+import { events } from "@/db/schemas";
 import { eq } from "drizzle-orm";
 
 export const addEvent = async (values: z.infer<typeof AddEventSchema>) => {
   const user = await currentUser();
+  if(!user){
+    return { error: "User not found!" };
+  }
   const validateFields = AddEventSchema.safeParse(values);
   if (!validateFields.success) {
-    return { error: "Invalid Fields!" };
+    return { error: "Invalid fields!" };
   }
   const { title: name, eventType, date, place } = validateFields.data;
   const addedEvent = await insertEvent(user?.id!, name, eventType!, date!, place!);

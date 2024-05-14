@@ -3,7 +3,7 @@ import React from "react";
 import { useCurrentRole } from "@/app/hooks/use-current-role";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { BsExclamationTriangle } from "react-icons/bs";
-import { UserRoleEnum } from "@/drizzle/schemas/schema";
+import { UserRoleEnum } from "@/db/schemas";
 type Props = {
   children: React.ReactNode,
 allowedRole: UserRoleEnum

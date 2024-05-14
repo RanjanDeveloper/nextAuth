@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input";
 import { useCurrentUser } from "@/app/hooks/use-current-user";
 import FormSuccess from "@/components/form-success";
 import FormError from "@/components/form-error";
-import { UserRoleEnum } from "@/drizzle/schemas/schema";
+import { UserRoleEnum } from "@/db/schemas";
 import { Switch } from "@/components/ui/switch";
 type Props = {};
 

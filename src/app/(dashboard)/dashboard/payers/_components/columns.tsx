@@ -2,9 +2,10 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import DataTableColumnHeader from "./data-table-column-header";
-import { EventsEnum } from "@/drizzle/schemas/schema";
+import { EventsEnum } from "@/db/schemas";
 import { format } from "date-fns";
 import Link from "next/link";
+import { formatCurrency } from "@/lib/utils";
 
 export type Payers = {
   id: string;
@@ -59,7 +60,7 @@ export const columns: ColumnDef<Payers>[] = [
       return <DataTableColumnHeader column={column} title="Amount" />;
     },
     cell:({row}) => {
-      return row.original.amount ?? 0;
+      return formatCurrency(row.original.amount ?? 0,'INR');
     },
     accessorFn: d => Number(d.amount)
   },

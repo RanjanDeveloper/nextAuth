@@ -11,7 +11,6 @@ export default function AddUser({}: Props) {
   const handleAddUser = () => {
     setOpenAddUser(true);
   };
-
   return (
     <>
       <Button className="font-bold" onClick={handleAddUser}>

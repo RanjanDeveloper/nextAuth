@@ -1,8 +1,8 @@
 "use server";
-import { twoFactorToken as TwoFactorTokenSchema, twoFactorConfirmation } from "@/drizzle/schemas/schema";
+import { twoFactorToken as TwoFactorTokenSchema, twoFactorConfirmation } from "@/db/schemas";
 import { getTwoFactorTokenByEmail } from "@/data/two-factor-token";
 import { LoginSchema } from "@/schemas";
-import { db } from "@/lib/db";
+import { db } from "@/db";
 import { getUserByEmail } from "@/data/users";
 import { sendTwoFactorTokenEmail, sendVerificationEmail } from "@/lib/mail";
 import { generateVerificationToken, generateTwoFactorToken } from "@/lib/tokens";
