@@ -1,6 +1,6 @@
 
 import { getUsersByRole } from "@/data/users";
-import { UserRoleEnum } from "@/drizzle/schemas/schema";
+import { UserRoleEnum } from "@/db/schemas";
 import React from "react";
 import { columns } from "./_components/columns";
 import { DataTable } from "./_components/data-table";

@@ -1,11 +1,10 @@
 "use server";
-import { AddEventSchema } from "@/schemas";
-import { EventsEnum, events, payers } from "@/drizzle/schemas/schema";
-import { db } from "@/lib/db";
-import { z } from "zod";
+import {  events, payers } from "@/db/schemas";
+import { db } from "@/db";
 import { v4 as uuid } from "uuid";
 import { currentUser } from "@/lib/auth";
-import { sql, eq, sum, and, like, ilike } from "drizzle-orm";
+import { sql, eq, sum, and, ilike } from "drizzle-orm";
+
 export const getPayersByEventId = async (eventId: string) => {
   try {
     const payers = await db.query.payers.findMany({
@@ -17,12 +16,13 @@ export const getPayersByEventId = async (eventId: string) => {
   }
 };
 
-export const insertPayer = async (name: string, amount: number, eventId: string, city?: string, description?: string) => {
+export const insertPayer = async (name: string, amount: number, eventId: string,userId:string, city?: string, description?: string) => {
   try {
     const newPayer = {
       id: uuid(),
       name,
       eventId,
+      userId,
       city,
       description,
       amount,
@@ -68,25 +68,27 @@ export const getCurrentUserPayers = async () => {
   }
 };
 
-export const getPayerDetails = async (name: string, city: string) => {
+export const getPayerDetails = async (name: string, city?: string) => {
   try {
     const user = await currentUser()!;
-    console.log(name, city);
+    console.log("cities",name, city);
+    const filter = city ? and(eq(sql`lower(${payers.name})`, name), eq(sql`lower(${payers.city})`, city)) : eq(sql`lower(${payers.name})`, name);
     const payersData = await db
       .select({
         name: sql<string>`lower(${payers.name})`.as("name"),
         city: sql<string>`lower(${payers.city})`.as("city"),
         eventId: payers.eventId,
+        userId: events.userId,
         title: events.title,
         amount: sum(payers.amount).as("amount"),
         eventType: events.eventType,
       })
       .from(payers)
-      .leftJoin(events, eq(events.id, payers.eventId))
-      .where(and(eq(sql`lower(${payers.name})`, name), eq(sql`lower(${payers.city})`, city)))
-      .groupBy(sql`lower(${payers.name})`, sql`lower(${payers.city})`, payers.eventId, events.title, events.eventType)
-      .as("payersData");
-
+      .leftJoin(events, eq(payers.eventId, events.id))
+      .where(filter)
+      .groupBy(sql`lower(${payers.name})`, sql`lower(${payers.city})`, payers.eventId, events.title, events.eventType,events.id)
+      .as('payersData');
+      
     const result = await db
       .select({
         name: sql<string>`lower(${payersData.name})`,
@@ -95,7 +97,7 @@ export const getPayerDetails = async (name: string, city: string) => {
         events: sql<string>`json_agg(json_build_object('title', ${payersData.title}, 'amount', ${payersData.amount},'eventType',${payersData.eventType}))`.as("events"),
       })
       .from(payersData)
-      .groupBy(sql`lower(${payersData.name})`, sql`lower(${payersData.city})`);
+      .groupBy(sql`lower(${payersData.name})`, sql`lower(${payersData.city})`).where(eq(payersData.userId, user?.id as string));
     console.log({ result });
     return result;
   } catch (error) {
@@ -105,15 +107,16 @@ export const getPayerDetails = async (name: string, city: string) => {
 };
 export const getPayerDetailsByName = async (name: string) => {
   try {
+    const user = await currentUser()!;
     const result = await db
       .select({
         name: sql<string>`lower(${payers.name})`.as("name"),
         city: sql<string>`lower(${payers.city})`.as("city"),
       })
-      .from(payers)
-      .where(ilike(payers.name, `${name}%`))
+      .from(payers).leftJoin(events,eq(events.id, payers.eventId))
+      .where(and(ilike(payers.name, `${name}%`),eq(events.userId, user?.id as string)))
       .groupBy(sql`lower(${payers.name})`, sql`lower(${payers.city})`);
-
+      
     console.log({ result });
     return result;
   } catch (error) {

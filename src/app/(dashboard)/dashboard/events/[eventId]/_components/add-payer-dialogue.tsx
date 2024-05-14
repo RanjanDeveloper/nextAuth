@@ -17,6 +17,7 @@ import { useClickAway, useDebounce } from "react-use";
 import { Textarea } from "@/components/ui/textarea";
 import { useSuggestions } from "@/app/hooks/use-suggestions";
 import SuggestionList from "./suggestion-list";
+import { getErrorMessage } from "@/lib/handle-errors";
 
 type Props = {
   isOpen: boolean;
@@ -26,7 +27,7 @@ type Props = {
 
 export default function AddPayerDialogue({ isOpen, onAddUserOpenChanges, eventId }: Props) {
   const { 
-    query: nameQuery, 
+  query : nameQuery, 
     setQuery: setNameQuery, 
     suggestions: nameSuggestions,
     isLoading: nameSugIsLoading, 
@@ -43,7 +44,7 @@ export default function AddPayerDialogue({ isOpen, onAddUserOpenChanges, eventId
   const [isCitySelectionOpen, setIsCitySelectionOpen] = useState(false);
   const nameFilterRef = useRef(null);
   const cityFilterRef = useRef(null);
-  const [isPending, startTransition] = useTransition();
+  const [isAddPayerPending, startAddPayerTransition] = useTransition();
 
   const form = useForm<z.infer<typeof AddPayerSchema>>({
     resolver: zodResolver(AddPayerSchema),
@@ -55,6 +56,7 @@ export default function AddPayerDialogue({ isOpen, onAddUserOpenChanges, eventId
     },
   });
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>, field: any) => {
+    
     field.onChange(e.target.value);
     setNameQuery(e.target.value);
     setIsNameSelectionOpen(!!e.target.value);
@@ -82,14 +84,16 @@ export default function AddPayerDialogue({ isOpen, onAddUserOpenChanges, eventId
     setIsCitySelectionOpen(false);
   };
   const submitHandler = (values: z.infer<typeof AddPayerSchema>) => {
-    startTransition(() => {
+    startAddPayerTransition(() => {
+      const toastId = toast('Sonner');
+      toast.loading("Loading....",{id:toastId})
       addPayer(values, eventId as string)
         .then(data => {
           if (data?.error) {
-            toast.error(data.error);
+            toast.error(data.error,{id:toastId});
           }
           if (data?.success) {
-            toast.success(data.success);
+            toast.success(data.success,{id:toastId});
             onAddUserOpenChanges(false);
           }
         })
@@ -115,7 +119,7 @@ export default function AddPayerDialogue({ isOpen, onAddUserOpenChanges, eventId
                     <FormLabel showError={false}>Name</FormLabel>
                     <FormControl>
                       <div ref={nameFilterRef} className="relative">
-                        <Input {...field} type="text" onChange={e => handleNameChange(e, field)} placeholder="Ranjan" disabled={isPending} />
+                        <Input {...field} type="text" onChange={e => handleNameChange(e, field)} placeholder="Ranjan" disabled={isAddPayerPending} />
                         {isNameSelectionOpen && <SuggestionList suggestions={nameSuggestions} isLoading={nameSugIsLoading} isSelectionOpen={isNameSelectionOpen} handleSuggestClick={handleSuggestClick}
                         renderSuggestion={(suggestion) => (
                           <>
@@ -139,7 +143,7 @@ export default function AddPayerDialogue({ isOpen, onAddUserOpenChanges, eventId
                     <FormLabel showError={false}>Place(Optional)</FormLabel>
                     <FormControl>
                       <div ref={cityFilterRef} className="relative">
-                        <Input {...field} type="text" placeholder="Kannikapuri" onChange={e => handleCityChange(e, field)} disabled={isPending} />
+                        <Input {...field} type="text" placeholder="Kannikapuri" onChange={e => handleCityChange(e, field)} disabled={isAddPayerPending} />
                         {isCitySelectionOpen && <SuggestionList suggestions={citySuggestions} isLoading={citySugIsLoading} isSelectionOpen={isCitySelectionOpen} handleSuggestClick={handleCitySuggestClick}
                         renderSuggestion={(suggestion)=><span>{suggestion.city}</span>}
                         />}
@@ -157,7 +161,7 @@ export default function AddPayerDialogue({ isOpen, onAddUserOpenChanges, eventId
                   <FormItem>
                     <FormLabel>Details (optional)</FormLabel>
                     <FormControl>
-                      <Textarea placeholder="Tell us a little bit about yourself" className="resize-none" {...field} />
+                      <Textarea disabled={isAddPayerPending} placeholder="Tell us a little bit about yourself" className="resize-none" {...field} />
                     </FormControl>
 
                     <FormMessage />
@@ -171,7 +175,7 @@ export default function AddPayerDialogue({ isOpen, onAddUserOpenChanges, eventId
                   <FormItem>
                     <FormLabel showError={false}>Amount</FormLabel>
                     <FormControl>
-                      <Input {...field} type="number" onChange={field.onChange} placeholder="Enter amount" disabled={isPending} />
+                      <Input {...field} type="number" onChange={field.onChange} placeholder="Enter amount" disabled={isAddPayerPending} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -179,8 +183,8 @@ export default function AddPayerDialogue({ isOpen, onAddUserOpenChanges, eventId
               />
             </div>
             <DialogFooter>
-              <Button type="submit" disabled={isPending}>
-                {isPending && <Loader2 className="size-4 mr-2 animate-spin" />} Add
+              <Button type="submit" disabled={isAddPayerPending}>
+                {isAddPayerPending && <Loader2 className="size-4 mr-2 animate-spin" />} Add
               </Button>
             </DialogFooter>
           </form>
@@ -189,3 +193,4 @@ export default function AddPayerDialogue({ isOpen, onAddUserOpenChanges, eventId
     </Dialog>
   );
 }
+

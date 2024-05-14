@@ -16,7 +16,7 @@
 import type { Config } from 'drizzle-kit';
 
 export default {
-  schema: './src/drizzle/schemas/schema.ts',
+  schema: './src/db/schemas.ts',
   out: './src/drizzle/out',
   driver: 'pg', // 'pg' | 'mysql2' | 'better-sqlite' | 'libsql' | 'turso'
   dbCredentials: {

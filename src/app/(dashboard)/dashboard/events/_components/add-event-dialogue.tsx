@@ -18,7 +18,7 @@ import { addEvent } from "@/actions/events";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
-import { EventsEnum } from "@/drizzle/schemas/schema";
+import { EventsEnum } from "@/db/schemas";
 type Props = {
   isOpen: boolean;
   onAddEventOpenChanges: React.Dispatch<React.SetStateAction<boolean>>;

@@ -1,11 +1,11 @@
 "use server";
 import bcrypt from "bcryptjs";
-import { db } from "@/lib/db";
+import { db } from "@/db";
 import * as z from "zod";
 import { currentUser } from "@/lib/auth";
 import { getUserByEmail, getUserById } from "@/data/users";
 import { SettingsSchema } from "@/schemas";
-import { UserRoleEnum, user as users } from "@/drizzle/schemas/schema";
+import { UserRoleEnum, user as users } from "@/db/schemas"
 import { eq } from "drizzle-orm";
 import { generateVerificationToken } from "@/lib/tokens";
 import { sendVerificationEmail } from "@/lib/mail";

@@ -2,7 +2,7 @@
 import { NextResponse } from "next/server";
 import { addUser } from "@/data/users";
 import { currentRole } from "@/lib/auth";
-import { UserRoleEnum } from "@/drizzle/schemas/schema";
+import { UserRoleEnum } from "@/db/schemas";
 
 export async function POST(request: Request) {
   const { name, email, password } = await request.json();

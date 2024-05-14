@@ -1,44 +1,60 @@
-import React, { useState, useTransition } from "react";
+import React, { useState, useTransition, ComponentPropsWithoutRef } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Payers } from "./columns";
 import { Button } from "@/components/ui/button";
 import { DialogClose } from "@radix-ui/react-dialog";
 import { deletePayer } from "@/actions/payers";
-import { Loader2 } from "lucide-react";
+import { Loader2, Trash2 } from "lucide-react";
 import { toast } from "sonner";
-type Props = {
-  isOpen: boolean;
-  onDeletePayerOpenChanges: React.Dispatch<React.SetStateAction<boolean>>;
-  payer: Payers;
-};
 
-export default function DeletePayerDialogue({ isOpen, onDeletePayerOpenChanges, payer }: Props) {
-  const [isPending, startTransition] = useTransition();
+interface DeletePayersDialogProps extends ComponentPropsWithoutRef<typeof Dialog> {
+  onSuccess?: () => void
+  payers: Payers[];
+  showTrigger?: boolean;
+}
+
+export default function DeletePayerDialogue({ payers, showTrigger = true,onSuccess, ...props }: DeletePayersDialogProps) {
+  const [isDeletePending, startDeleteTransition] = useTransition();
+
   const handlePayerDelete = () => {
-    startTransition(() => {
-      const id: string = payer.id;
-      deletePayer(id)
-        .then(data => {
-          if (data?.error) {
-            toast.error(data.error)
-          }
-          if (data?.success) {
-            toast.success(data.success)
-            onDeletePayerOpenChanges(false);
-          }
-        
-        })
-        .catch(() => toast.error("Something went wrong!")).finally(()=>{
-           
-        });
+    console.log("deletablepayres", payers);
+    startDeleteTransition(() => {
+      toast.promise(
+        Promise.all(
+          payers.map(async (payer: any) => {
+            const id: string = payer.id;
+            await deletePayer(id);
+          })
+        ),
+        {
+          loading: "Deleting...",
+          success: () => {
+            onSuccess?.();
+            return "Tasks deleted";
+          },
+          error: () => {
+            return "something went wrong";
+          },
+        }
+      );
     });
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onDeletePayerOpenChanges}>
-      <DialogContent onInteractOutside={(e) => {
+    <Dialog {...props}>
+      {showTrigger ? (
+        <DialogTrigger asChild>
+          <Button variant="outline" size="sm">
+            <Trash2 className="mr-2 size-4" aria-hidden="true" />
+            Delete ({payers.length})
+          </Button>
+        </DialogTrigger>
+      ) : null}
+      <DialogContent
+        onInteractOutside={e => {
           e.preventDefault();
-        }}>
+        }}
+      >
         <DialogHeader>
           <DialogTitle>Are you absolutely sure?</DialogTitle>
           <DialogDescription>This action cannot be undone. This will permanently delete your account and remove your data from our servers.</DialogDescription>
@@ -47,8 +63,8 @@ export default function DeletePayerDialogue({ isOpen, onDeletePayerOpenChanges, 
           <DialogClose asChild>
             <Button variant="outline">Cancel</Button>
           </DialogClose>
-          <Button variant="destructive" disabled={isPending} onClick={handlePayerDelete}>
-          {isPending && <Loader2 className="size-4 mr-2 animate-spin"/>}Delete 
+          <Button variant="destructive" disabled={isDeletePending} onClick={handlePayerDelete}>
+            {isDeletePending && <Loader2 className="size-4 mr-2 animate-spin" />}Delete
           </Button>
         </DialogFooter>
       </DialogContent>

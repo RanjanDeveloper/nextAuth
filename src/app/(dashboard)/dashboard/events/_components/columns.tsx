@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge"
 import { ColumnDef } from "@tanstack/react-table";
 import MoreActions from "./more-actions";
 import DataTableColumnHeader from "./data-table-column-header";
-import { EventsEnum } from "@/drizzle/schemas/schema";
+import { EventsEnum } from "@/db/schemas";
 import { format } from "date-fns";
 import Link from "next/link";
 import { formatCurrency, getEventTypeVariant } from "@/lib/utils";
