@@ -4,7 +4,7 @@ import Rolegate from "@/components/auth/role-gate";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { UserRoleEnum } from "@/db/schemas
+import { UserRoleEnum } from "@/db/schemas";
 import React from "react";
 import { FaCheck } from "react-icons/fa";
 import { toast } from "sonner";
