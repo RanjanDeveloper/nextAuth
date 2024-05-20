@@ -66,9 +66,9 @@ export default function LoginForm({}: Props) {
                       name="name1"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel showError={false}>Your email</FormLabel>
+                          <FormLabel showError={false}>Your Name</FormLabel>
                           <FormControl>
-                            <Input {...field} type="text" placeholder="Ranjan" />
+                            <Input {...field} type="text" placeholder="Romeo" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -80,9 +80,9 @@ export default function LoginForm({}: Props) {
                       name="name2"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel showError={false}>Your email</FormLabel>
+                          <FormLabel showError={false}>Partner Name</FormLabel>
                           <FormControl>
-                            <Input {...field} type="text" placeholder="Ranjan" />
+                            <Input {...field} type="text" placeholder="Juliet" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -100,7 +100,7 @@ export default function LoginForm({}: Props) {
               <>
                 <Image src={flamesImages[result.relation]} alt={result.relation} className="w-full max-w-40 mx-auto" />
                 <div className="text-center font-bold text-5xl">{result.relation}</div>
-                <div className="text-center text-2xl">Love Percentage: {result.percentage}%</div>
+                <div className="text-center text-md">Love Percentage: {result.percentage}%</div>
                 <Progress value={Number(result.percentage)}/>
                 <div className="text-center">
                   <Button size="sm" variant="link" className="text-blue-800" onClick={backHandler}>Back to Calculate</Button>
