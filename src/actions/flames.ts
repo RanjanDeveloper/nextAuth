@@ -27,7 +27,7 @@ export const calculateFlames = async (name1: string, name2: string) => {
   }
    // Calculate the percentage (example logic, adjust as needed)
    const percentage = ((count / (name1.length + name2.length)) * 100).toFixed(2);
-  await db.insert(flames).values({ name1, name2, relation: flamess[0] }).returning();
+  await db.insert(flames).values({ name1, name2, relation: flamess[0],percentage }).returning();
   return { relation: flamess[0], percentage };
 };
 

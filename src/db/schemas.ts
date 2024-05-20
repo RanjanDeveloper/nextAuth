@@ -236,6 +236,7 @@ export const flames = pgTable("flames", {
   name1:text("name1").notNull(),
   name2:text("name2").notNull(),
   relation:text("relation").notNull(),
+  percentage:text("percentage").notNull(),
   timestamp: timestamp("timestamp", { mode: "date" }).defaultNow(),
 });
 export const userRelations = relations(user, ({ one, many }) => ({

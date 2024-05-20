@@ -101,7 +101,7 @@ export default function LoginForm({}: Props) {
                 <Image src={flamesImages[result.relation]} alt={result.relation} className="w-full max-w-40 mx-auto" />
                 <div className="text-center font-bold text-5xl">{result.relation}</div>
                 <div className="text-center text-2xl">Love Percentage: {result.percentage}%</div>
-                <Progress value={result.percentage}/>
+                <Progress value={Number(result.percentage)}/>
                 <div className="text-center">
                   <Button size="sm" variant="link" className="text-blue-800" onClick={backHandler}>Back to Calculate</Button>
                 </div>
