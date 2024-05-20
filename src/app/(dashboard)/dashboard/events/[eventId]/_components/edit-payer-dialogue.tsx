@@ -1,5 +1,5 @@
 "use client";
-import React, { useTransition } from "react";
+import React, { useTransition ,ComponentPropsWithoutRef} from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader } from "@/components/ui/dialog";
 import { FormField, Form, FormItem, FormDescription, FormControl, FormMessage, FormLabel } from "@/components/ui/form";
@@ -10,20 +10,20 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { editPayer } from "@/actions/payers";
 import { toast } from "sonner";
-import { Payers } from "./columns";
+import { type Payers } from "./columns";
 import { Textarea } from "@/components/ui/textarea";
+import { type Row } from "@tanstack/react-table";
 
-type Props = {
+interface Props  extends ComponentPropsWithoutRef<typeof Dialog> {
   payer: Payers;
-  isOpen: boolean;
-  onEditPayerOpenChanges: React.Dispatch<React.SetStateAction<boolean>>;
+  onSuccess?:()=> void;
 };
 
-export default function EditPayerDialogue({ payer, isOpen, onEditPayerOpenChanges }: Props) {
+export default function EditPayerDialog({ payer,onSuccess,...props }: Props) {
   const form = useForm<z.infer<typeof EditPayerSchema>>({
     resolver: zodResolver(EditPayerSchema),
     defaultValues: {
-      name: payer.name || undefined,
+      name: payer.name|| undefined,
       city: payer.city || undefined,
       amount: payer.amount || 0,
       description: payer.description || undefined
@@ -40,14 +40,14 @@ export default function EditPayerDialogue({ payer, isOpen, onEditPayerOpenChange
           }
           if (data?.success) {
             toast.success(data.success);
-            onEditPayerOpenChanges(false);
+            onSuccess?.();
           }
         })
         .catch(() => toast.error("Something went wrong!"));
     });
   };
   return (
-    <Dialog open={isOpen} onOpenChange={onEditPayerOpenChanges}>
+    <Dialog {...props}>
       <DialogContent
         onInteractOutside={e => {
           e.preventDefault();

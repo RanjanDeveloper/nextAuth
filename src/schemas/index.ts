@@ -1,5 +1,4 @@
-import { EventsEnum, UserRoleEnum } from "@/drizzle/schemas/schema";
-import { datetime } from "drizzle-orm/mysql-core";
+import { EventsEnum, UserRoleEnum } from "@/db/schemas";
 import * as z from "zod";
 
 export const LoginSchema = z.object({
@@ -28,6 +27,7 @@ export const AddUserSchema = z.object({
   name: z.string().min(1, { message: "Name is required" }),
   email: z.string().min(1, { message: "Email is required" }).email("This is not a valid email"),
   password: z.string().min(1, { message: "Password is required" }).min(8, { message: "Password is too short" }),
+  role: z.enum([UserRoleEnum.ADMIN, UserRoleEnum.USER]),
   isTwoFactorEnabled: z.boolean(),
 });
 export const AddPayerSchema = z.object({
@@ -108,4 +108,11 @@ export const EditEventSchema = z.object({
     invalid_type_error: "That's not a date!",
   }),
   place:z.string().min(1, { message: "Place is required" })
+});
+
+//Flames
+
+export const Flameschema = z.object({
+  name1: z.string().min(1, 'Name is required').regex(/^[a-zA-Z\s]+$/, 'Name should contain only letters and spaces'),
+  name2: z.string().min(1, 'Name is required').regex(/^[a-zA-Z\s]+$/, 'Name should contain only letters and spaces'),
 });

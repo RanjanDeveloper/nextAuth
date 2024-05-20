@@ -1,8 +1,8 @@
 import { user } from './src/drizzle/schemas/schema';
 import { typeAdapterAccount } from '@auth/core/adapters';
-import { UserRoleEnum } from "@/drizzle/schemas/schema";
+import { UserRoleEnum } from "@/db/schemas";
 import  {  type DefaultSession } from "next-auth";
-// import { UserRole } from "@/drizzle/schemas/schema";
+// import { UserRole } from "@/db/schemas";
 export type defaultUser = DefaultSession["user"];
 
 declare module "next-auth" {

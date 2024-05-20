@@ -3,6 +3,7 @@ import React, { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { FormField, Form, FormItem, FormDescription, FormControl, FormMessage, FormLabel } from "@/components/ui/form";
+import { Select, SelectContent, SelectTrigger, SelectValue, SelectItem } from "@/components/ui/select";
 import FormSuccess from "@/components/form-success";
 import FormError from "@/components/form-error";
 import { Switch } from "@/components/ui/switch";
@@ -14,6 +15,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { adduser } from "@/actions/admin";
 import { toast } from "sonner";
+import { UserRoleEnum } from "@/db/schemas";
 type Props = {
   isOpen: boolean;
   onAddUserOpenChanges: any;
@@ -27,6 +29,7 @@ export default function AddUserDialogue({ isOpen, onAddUserOpenChanges }: Props)
       name: "",
       email: "",
       password: "",
+      role:UserRoleEnum.USER,
       isTwoFactorEnabled: false,
     },
   });
@@ -93,7 +96,27 @@ export default function AddUserDialogue({ isOpen, onAddUserOpenChanges }: Props)
                   </FormItem>
                 )}
               />
-
+              <FormField
+                      control={form.control}
+                      name="role"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel showError={false}>Role</FormLabel>
+                          <Select disabled={isPending} onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select a value" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value={UserRoleEnum.ADMIN}>Admin</SelectItem>
+                              <SelectItem value={UserRoleEnum.USER}>User</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
               <FormField
                 control={form.control}
                 name="isTwoFactorEnabled"

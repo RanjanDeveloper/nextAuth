@@ -1,10 +1,10 @@
 "use server";
-import { passwordResetToken, user } from '@/drizzle/schemas/schema';
+import { passwordResetToken, user } from '@/db/schemas';
 import bcrypt  from 'bcryptjs';
 import { getUserByEmail } from "@/data/users";
 import { getPasswordResetTokenByToken } from "../data/password-reset-tokens";
 import { NewPasswordSchema } from "@/schemas";
-import { db } from '@/lib/db';
+import { db } from '@/db';
 import { eq } from 'drizzle-orm';
 import { z } from 'zod';
 

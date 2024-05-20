@@ -1,6 +1,6 @@
 'use server';
-import { db } from "@/lib/db";
-import { UserRoleEnum, user } from "../drizzle/schemas/schema";
+import { db } from "@/db";
+import { UserRoleEnum, user } from "@/db/schemas";
 import bcrypt from  'bcryptjs';
 import {v4 as uuid} from 'uuid';
 import { eq } from "drizzle-orm";
@@ -35,6 +35,7 @@ export const getUsersByRole = async(role:UserRoleEnum)=>{
         name:true,
         email:true,
         isTwoFactorEnabled:true,
+        userRole:true,
         password:true
       },
       where: (user, { eq }) => eq(user.userRole, role),
@@ -58,7 +59,7 @@ export const getUserById = async(id:string)=>{
   }
 }
 
-export const addUser = async (name:string,email: string, password: string,isTwoFactorEnabled?:boolean,emailVerified?:Date ) => {
+export const addUser = async (name:string,email: string, password: string,role?:UserRoleEnum,isTwoFactorEnabled?:boolean,emailVerified?:Date ) => {
   try {
     // 1. Hash the password securely
     const hashedPassword = await bcrypt.hash(password, 10); // Adjust salt rounds as needed
@@ -68,6 +69,7 @@ export const addUser = async (name:string,email: string, password: string,isTwoF
       id:uuid(),
       name,
       email,
+      userRole:role,
       password: hashedPassword,
       isTwoFactorEnabled,
       emailVerified,

@@ -1,6 +1,6 @@
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
-import { EventsEnum } from "@/drizzle/schemas/schema";
+import { EventsEnum } from "@/db/schemas";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))

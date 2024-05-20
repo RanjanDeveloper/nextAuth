@@ -1,4 +1,4 @@
-import { timestamp } from 'drizzle-orm/pg-core';
+import { timestamp } from "drizzle-orm/pg-core";
 // import { int, mysqlTable, varchar, text, datetime, primaryKey, mysqlEnum, boolean } from "drizzle-orm/mysql-core";
 // import type { AdapterAccount } from "@auth/core/adapters";
 // import { relations } from "drizzle-orm";
@@ -104,7 +104,7 @@ import { timestamp } from 'drizzle-orm/pg-core';
 //     references: [twoFactorConfirmation.userId],
 //   }),
 // }));
-import { integer, pgTable, text,  primaryKey, pgEnum, boolean } from "drizzle-orm/pg-core";
+import { integer, pgTable, text, primaryKey, pgEnum, boolean,serial } from "drizzle-orm/pg-core";
 import type { AdapterAccount } from "@auth/core/adapters";
 import { relations } from "drizzle-orm";
 export enum UserRoleEnum {
@@ -127,7 +127,7 @@ export const user = pgTable("user", {
   userRole: UserRole("userRole").default("USER"),
   password: text("password"),
   isTwoFactorEnabled: boolean("isTwoFactorEnabled").default(false),
-  timestamp:timestamp('timestamp', { mode: "date" }).defaultNow()
+  timestamp: timestamp("timestamp", { mode: "date" }).defaultNow(),
 });
 export const accounts = pgTable(
   "account",
@@ -161,11 +161,11 @@ export const verificationToken = pgTable(
     token: text("token").unique(),
     expires: timestamp("expires", { mode: "date" }),
   },
-  verificationToken => ({
-    pk: primaryKey({
-      columns: [verificationToken.email, verificationToken.token],
-    }),
-  })
+  // verificationToken => ({
+  //   pk: primaryKey({
+  //     columns: [verificationToken.email, verificationToken.token],
+  //   }),
+  // })
 );
 
 export const passwordResetToken = pgTable(
@@ -176,11 +176,11 @@ export const passwordResetToken = pgTable(
     token: text("token").unique(),
     expires: timestamp("expires", { mode: "date" }),
   },
-  passwordResetToken => ({
-    pk: primaryKey({
-      columns: [passwordResetToken.email, passwordResetToken.token],
-    }),
-  })
+  // passwordResetToken => ({
+  //   pk: primaryKey({
+  //     columns: [passwordResetToken.email, passwordResetToken.token],
+  //   }),
+  // })
 );
 
 export const twoFactorToken = pgTable(
@@ -191,11 +191,11 @@ export const twoFactorToken = pgTable(
     token: text("token").notNull().unique(),
     expires: timestamp("expires", { mode: "date" }),
   },
-  twoFactorToken => ({
-    pk: primaryKey({
-      columns: [twoFactorToken.email, twoFactorToken.token],
-    }),
-  })
+  // twoFactorToken => ({
+  //   pk: primaryKey({
+  //     columns: [twoFactorToken.email, twoFactorToken.token],
+  //   }),
+  // })
 );
 
 export const twoFactorConfirmation = pgTable("twoFactorConfirmation", {
@@ -214,18 +214,30 @@ export const events = pgTable("events", {
   eventType: eventsEnum("eventType"),
   dateTime: timestamp("dateTime").notNull(),
   location: text("location"),
-  timestamp:timestamp('timestamp', { mode: "date" }).defaultNow()
+  timestamp: timestamp("timestamp", { mode: "date" }).defaultNow(),
 });
 export const payers = pgTable("payers", {
   id: text("id").notNull().primaryKey(),
   eventId: text("eventId")
     .notNull()
     .references(() => events.id, { onDelete: "cascade" }),
-  name:text("name").notNull(),
-  city:text("city"),
-  description:text("description"),
-  amount:integer("amount").notNull(),
-  timestamp:timestamp('timestamp', { mode: "date" }).defaultNow()
+  userId: text("userId")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  city: text("city"),
+  description: text("description"),
+  amount: integer("amount").notNull(),
+  timestamp: timestamp("timestamp", { mode: "date" }).defaultNow(),
+});
+
+export const flames = pgTable("flames", {
+  id: serial('id').primaryKey(),
+  name1:text("name1").notNull(),
+  name2:text("name2").notNull(),
+  relation:text("relation").notNull(),
+  percentage:text("percentage").notNull(),
+  timestamp: timestamp("timestamp", { mode: "date" }).defaultNow(),
 });
 export const userRelations = relations(user, ({ one, many }) => ({
   accounts: one(accounts, {
@@ -237,20 +249,24 @@ export const userRelations = relations(user, ({ one, many }) => ({
     references: [twoFactorConfirmation.userId],
   }),
   events: many(events),
+  payers:many(payers)
 }));
 
-export const eventsRelations = relations(events, ({ one,many }) => ({
+export const eventsRelations = relations(events, ({ one, many }) => ({
   users: one(user, {
     fields: [events.userId],
     references: [user.id],
   }),
-  payers:many(payers)
+  payers: many(payers),
 }));
 
 export const payersRelations = relations(payers, ({ one }) => ({
-  accounts: one(events, {
+  events: one(events, {
     fields: [payers.eventId],
     references: [events.id],
   }),
- 
+  users: one(user, {
+    fields: [payers.userId],
+    references: [user.id],
+  }),
 }));
