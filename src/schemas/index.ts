@@ -109,3 +109,10 @@ export const EditEventSchema = z.object({
   }),
   place:z.string().min(1, { message: "Place is required" })
 });
+
+//Flames
+
+export const Flameschema = z.object({
+  name1: z.string().min(1, 'Name is required').regex(/^[a-zA-Z\s]+$/, 'Name should contain only letters and spaces'),
+  name2: z.string().min(1, 'Name is required').regex(/^[a-zA-Z\s]+$/, 'Name should contain only letters and spaces'),
+});
