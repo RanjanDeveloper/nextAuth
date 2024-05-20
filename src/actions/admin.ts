@@ -33,7 +33,7 @@ export const adduser = async (values: z.infer<typeof AddUserSchema>) => {
   const emailVerified = new Date();
   const addedUser = await addUser(name, email, password,role, isTwoFactorEnabled, emailVerified);
   if (!addedUser) {
-    return { success: "Something went wrong!" };
+    return { error: "Something went wrong!" };
   }
   revalidatePath('/dashboard/users')
   return { success: "User added Successfully!" };
